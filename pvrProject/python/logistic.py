@@ -2,6 +2,7 @@ import numpy as np
 import theano
 import theano.tensor as T
 import math
+import header
 rng = np.random
 
 class logistic:
@@ -45,9 +46,24 @@ class logistic:
             pred, err = s.train(s.D[0], s.D[1])
             if i + 1 == 1 or i + 1 == s.steps or (i + 1) % math.ceil(math.sqrt(s.steps)) == 0:
                 print("Trained " + str(i + 1) + "/" + str(s.steps) + " steps")
-        print ("target values for D:", s.D[1])
-        print ("prediction on D:", s.predict(s.D[0]))
-        print ("Differences in target values and prediction:", s.D[1] - s.predict(s.D[0]))
+        #print ("target values for D:", s.D[1])
+        #print ("prediction on D:", s.predict(s.D[0]))
+        #print ("Differences in target values and prediction:", s.D[1] - s.predict(s.D[0]))
+        print("Correct classifications in training set: " + str(len(s.D[1]) - np.sum(np.abs(s.D[1] - s.predict(s.D[0])))) + "/" + str(len(s.D[1])))
+
+    def classifyImages(s, imageArray, classArray, nameList):
+        dislikeCount = 0
+        for i in range(len((imageArray))):
+            image = imageArray[i]
+            matrixFormatImage = image.reshape(1,s.feats)
+            predictedClass = header.intToClass(1 if s.predict(matrixFormatImage) else 0)
+            trueClass = header.intToClass(classArray[i])
+            #print(trueClass, predictedClass)
+            if  predictedClass != trueClass:
+                print("The " + str(trueClass) + " " + nameList[i] + " was misclassified as a " + predictedClass)
+                dislikeCount += 1
+        print("Misclassifications on test set: " + str(dislikeCount) + "/" + str(len(imageArray)))
+
 
     def classify(s, image, imageName):
         matrixFormatImage = image.reshape(1,s.feats)

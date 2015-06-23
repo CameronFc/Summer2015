@@ -1,13 +1,11 @@
 from header import dirs
 from header import typeSwitcher
+from header import classToInt
 from scipy import misc
 import matplotlib.pyplot as plt
 import os
 import numpy as np
 
-#Convert the data of a given image into MNIST format
-def formatImageListData(images, trueClassList):
-    return np.array([images,trueClassList])
 
 def readImage(name, type):
     return misc.imread(dirs.imageDirectory + typeSwitcher(type) + name)
@@ -24,13 +22,6 @@ def getClass(imageName):
         for line in out:
             if line[:len(imageName)] == imageName:
                 return line[(len(imageName)+1):-1]
-
-def classToInt(className):
-    if className == 'sphere':
-        return 0
-    if className == 'cube':
-        return 1
-    return 2
 
 #TODO: Make sure that the files are all of the same dimension before constructing the image array
 #Have some way to specify what images you want to use to construct the array instead of just every png as it is now

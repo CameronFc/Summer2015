@@ -1,5 +1,4 @@
 #can include -GA switch to make things faster
-import os
 import time
 import math
 import os

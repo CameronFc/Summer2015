@@ -39,6 +39,19 @@ def typeSwitcher(x):
         '2': "validation/"
     }.get(str(x),"")
 
+classes = {
+        'sphere': 0,
+        'cube': 1
+    }
+
+def intToClass(int):
+    for name in classes:
+        if classes[name] == int:
+            return name
+
+def classToInt(className):
+    return classes.get(className, 2)
+
 
 #print(path)
 
