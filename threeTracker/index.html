@@ -129,8 +129,7 @@
 					cube.rotation.y = trackerArray[dataIter][types[2 * text.tC + 1]] * Math.PI/180;			
 					dataIter++
 				}else if(dataIter == trackerArray.length){
-					console.log("Completed Animation");
-					return;
+					document.getElementById("debugContainer").innerText = "Completed Animation";
 				}
 
 				//controls.update();
