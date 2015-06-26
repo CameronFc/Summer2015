@@ -66,9 +66,9 @@ class tests:
 #TODO: make classification classes more integrated into project instead of 1's and 0's
 
 
-#tests.createScenes()
+tests.createScenes()
 tests.render()
-#tests.CARATS()
-#tests.convertAllToGreyScale()
-#tests.logisticAll()
+tests.CARATS()
+tests.convertAllToGreyScale()
+tests.logisticAll()
 
