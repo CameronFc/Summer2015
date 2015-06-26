@@ -3,12 +3,14 @@
 Installation Instructions:
 
 ##Mac OS X
+```
 install homebrew
 brew install povray
 
-Required python modules:
-scipy
-matplotlib
-numpy
+sudo apt-get install python3-pip
+pip3 install scipy
+pip3 install matplotlib
+pip3 install numpy
+```
 
 
