@@ -24,8 +24,5 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-*.png
-*.jpg
-*.pov
 .idea/
 __pycache__/
