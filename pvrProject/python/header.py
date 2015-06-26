@@ -1,15 +1,5 @@
 #python file to generate scene files
-from subprocess import call
-from subprocess import check_output
-from PIL import Image
-from scipy import misc
-import pprint
-import time
 import os
-import math
-import numpy.random as rng
-import numpy as np
-import matplotlib.pyplot as plt
 
 #Grab a generic scene file
 #Write to its contents some of the variables listed for it

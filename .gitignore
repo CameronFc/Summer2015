@@ -24,9 +24,8 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-training/
-tests/
-validation/
-Povray/
+*.png
+*.jpg
+*.pov
 .idea/
 __pycache__/

@@ -20,7 +20,7 @@ def renderImages(files, type):
     for fileName in files:
             if(fileName[-4:] == ".pov"):
                 sceneName = fileName[:-4]
-                returncode = call([dirs.path + "../Povray/povray", "./" + dirs.sceneDirectory + typeSwitcher(type) + fileName,
+                returncode = call(["povray", "./" + dirs.sceneDirectory + typeSwitcher(type) + fileName,
                                    "+O" + dirs.path + dirs.imageDirectory + typeSwitcher(type) + sceneName,
                                    "-GA"], stdout=open(os.devnull, "w"),  stderr=STDOUT)
                 if returncode != 0 and verboseRender:
