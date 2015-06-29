@@ -18,6 +18,7 @@
 		</style>
  	</head>
 	<body>  
+		<canvas id="canvas"></canvas>
 		<div id="debugContainer"></div>
 		<script type="text/javascript">
 			var scene = new THREE.Scene();
@@ -36,7 +37,8 @@
 		    scene.add(light3);
 		    scene.add(light4);
 
-			var renderer = new THREE.WebGLRenderer();
+		    var canvas = document.getElementById("canvas")
+			var renderer = new THREE.WebGLRenderer({canvas : canvas});
 			renderer.setSize( window.innerWidth, window.innerHeight );
 			document.body.appendChild( renderer.domElement );
 
@@ -58,7 +60,8 @@
 			var rotSpeed = 3;
 			var r = 3;
 
-			var render = function () {
+
+			var render = function(){
 				cube.rotation.x += rotSpeed * Math.PI/180;
 				cube.rotation.y += rotSpeed * Math.PI/180;		
 
@@ -68,8 +71,8 @@
 				frameCount++;
 				renderer.render(scene, camera);
 				requestAnimationFrame( render );
-			};
 
+			};
 
 			render();
 
