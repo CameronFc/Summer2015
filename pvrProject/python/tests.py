@@ -10,18 +10,19 @@ import alteration as alt
 import os
 
 
-
 class tests:
     @staticmethod
     def createScenes():
         sc.clearIndex()
         for i in range(100):
             name = "sphere" + str(i)
-            sc.createScene(name, "sphere")
+            #sc.createScene(name, "sphere")
+            sc.ltlDebugScene(name)
             sc.writeToIndex(name + " sphere")
         for i in range(100):
             name = "cube" + str(i)
-            sc.createScene(name, "cube")
+            #sc.createScene(name, "cube")
+            sc.ltlDebugScene(name)
             sc.writeToIndex(name + " cube")
         print("Completed creating scenes")
 
@@ -67,8 +68,8 @@ class tests:
 
 
 tests.createScenes()
-tests.render()
-tests.CARATS()
-tests.convertAllToGreyScale()
-tests.logisticAll()
+#tests.render()
+#tests.CARATS()
+#tests.convertAllToGreyScale()
+#tests.logisticAll()
 

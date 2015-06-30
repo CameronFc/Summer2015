@@ -48,6 +48,7 @@ def getAllImages(type):
     imageArray = []
     #print(imageArray)
     classArray = np.zeros(imageCount, dtype=np.int)
+    processed = 0
     nameList = []
 
     for index, fileName in enumerate(files):
@@ -56,8 +57,9 @@ def getAllImages(type):
             #print(np.array(readImage(fileName)))
             #print(dir(readImage(fileName)))
             imageArray.append(readImage(fileName, type).flatten())
-            classArray[index - 1] = classToInt(getClass(fileName[:-4]))
+            classArray[processed] = classToInt(getClass(fileName[:-4]))
             nameList.append(fileName)
+            processed += 1
             #print(classArray[index - 1])
             #imageArray = np.append(imageArray,readImage(fileName), axis = 1)
             #displayImage(readImage(fileName))
