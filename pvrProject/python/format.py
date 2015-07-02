@@ -20,7 +20,7 @@ def getClass(imageName):
     #We might also want to pickle the data if it is convenient
     #return the class of the object if its name is found, otherwise expel error
     for scene in unPickleIndex():
-        if scene.name == imageName:
+        if scene.get("name") == imageName:
             return scene
 
 #TODO: Make sure that the files are all of the same dimension before constructing the image array
@@ -47,8 +47,7 @@ def getAllImages(type):
     #imageArray = np.zeros(dims, dtype=np.int)
     imageArray = []
     #print(imageArray)
-    classArray = np.zeros(imageCount, dtype=np.int)
-    processed = 0
+    classArray = []
     nameList = []
 
     for index, fileName in enumerate(files):
@@ -57,9 +56,8 @@ def getAllImages(type):
             #print(np.array(readImage(fileName)))
             #print(dir(readImage(fileName)))
             imageArray.append(readImage(fileName, type).flatten())
-            classArray[processed] = getClass(fileName[:-4])
+            classArray.append(getClass(fileName[:-4]))
             nameList.append(fileName)
-            processed += 1
             #print(classArray[index - 1])
             #imageArray = np.append(imageArray,readImage(fileName), axis = 1)
             #displayImage(readImage(fileName))
@@ -67,7 +65,7 @@ def getAllImages(type):
     #print(imageArray)
     return imageArray, classArray, nameList
 
-#imageArray, classArray, nameList = getAllImages()
+#imageArray, classArray, nameList = getAllImages(0)
 
 #print(type(readImage("cube0.png")))
 #displayImage(imageArray[0])
