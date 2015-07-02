@@ -20,6 +20,7 @@ def getClass(imageName):
     #We might also want to pickle the data if it is convenient
     #return the class of the object if its name is found, otherwise expel error
     for scene in unPickleIndex():
+        #print("Scene name of pickled scene", scene.get("name"))
         if scene.get("name") == imageName:
             return scene
 

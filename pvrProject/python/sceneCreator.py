@@ -49,6 +49,32 @@ def ltlDebugScene(sceneName, type=0):
     dict = {"objects" : {"light": {"position" : xyz}}, "name" : sceneName}
     sceneFromObjCreator(sceneName, objC, dict, type)
 
+##################################################################################################
+##Holdovers
+def getxyz(scale):
+    xyz = np.zeros(3)
+    for index, element in enumerate(xyz):
+        xyz[index] = rng.randn(1) * scale
+    return xyz
+
+def cubeScene(sceneName, type=0):
+    objC = oc.objectCreator()
+    objC.addRectPrism([0.0,0.0,0.0], [1.5,1.5,1.5], [1,0,0])
+    for i in range(3):
+        xyz = getxyz(10)
+        objC.addPointLight(xyz, [1,1,1])
+    dict = {"class" : 1, "name" : sceneName}
+    sceneFromObjCreator(sceneName, objC, dict, type)
+
+def sphereScene(sceneName, type=0):
+    objC = oc.objectCreator()
+    objC.addSphere([0.0,0.0,0.0], 2, [1,0,0])
+    for i in range(3):
+        xyz = getxyz(10)
+        objC.addPointLight(xyz, [1,1,1])
+    dict = {"class" : 0, "name" : sceneName}
+    sceneFromObjCreator(sceneName, objC, dict, type)
+##################################################################################################
 
 def sceneFromObjCreator(sceneName, objC, dict, type):
     with open("./" + dirs.sceneDirectory + typeSwitcher(type) + sceneName + ".pov", "w") as out:

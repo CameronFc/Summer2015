@@ -61,7 +61,7 @@ camera {
     def addPointLight(self, xyz, color):
         pos = "<{0},{1},{2}>".format(*xyz)
         colors = "color red {0} green {1} blue {2}".format(*color)
-        str = "light_source {{ {0} {1} }}".format(pos, colors)
+        str = "light_source {{ {0} {1} }} \n".format(pos, colors)
         self.scene += str
         #print(self.scene)
 

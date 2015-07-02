@@ -13,7 +13,15 @@ class logistic:
         #print("length of image array ", len(imageArray))
         s.feats = len(imageArray[0])
         #print("length of images ", len(imageArray[0]))
-        s.D = (imageArray, classArray)
+        rca = []
+        # for i in classArray:
+        #     rca.append(i.get("objects").get("light").get("position"))
+        # print(rca)
+        for i in classArray:
+            #print(i)
+            rca.append(i.get("class"))
+        #print(rca)
+        s.D = (imageArray, rca)
 
         s.x = T.matrix("x")
         s.y = T.vector("y")
@@ -22,7 +30,7 @@ class logistic:
 
         s.b = theano.shared(0., name="b")
 
-        s.p_1 = 1 / (1 + T.exp(-T.dot(s.x, s.w) + s.b))
+        s.p_1 = 1 / (1 + T.exp(T.dot(s.x, s.w) + s.b))
 
         s.prediction = s.p_1 > 0.50
 
@@ -52,12 +60,15 @@ class logistic:
         print("Correct classifications in training set: " + str(len(s.D[1]) - np.sum(np.abs(s.D[1] - s.predict(s.D[0])))) + "/" + str(len(s.D[1])))
 
     def classifyImages(s, imageArray, classArray, nameList):
+        rca = []
+        for i in classArray:
+            rca.append(i.get("class"))
         dislikeCount = 0
         for i in range(len((imageArray))):
             image = imageArray[i]
             matrixFormatImage = image.reshape(1,s.feats)
             predictedClass = header.intToClass(1 if s.predict(matrixFormatImage) else 0)
-            trueClass = header.intToClass(classArray[i])
+            trueClass = header.intToClass(rca[i])
             #print(trueClass, predictedClass)
             if  predictedClass != trueClass:
                 print("The " + str(trueClass) + " " + nameList[i] + " was misclassified as a " + predictedClass)

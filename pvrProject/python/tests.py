@@ -16,12 +16,12 @@ class tests:
         sc.clearPickleIndex()
         for i in range(100):
             name = "sphere" + str(i)
-            sc.ltlDebugScene(name)
+            sc.sphereScene(name)
         for i in range(100):
             name = "cube" + str(i)
-            sc.ltlDebugScene(name)
+            sc.cubeScene(name)
         print("Completed creating scenes")
-        for i in sc.unPickleIndex(): print(i)
+        #for i in sc.unPickleIndex(): print(i)
 
     @staticmethod
     def render():
@@ -48,8 +48,7 @@ class tests:
     def CARATS():
         for i in range(100):
             name = "TestSphere" + str(i)
-            sc.createScene(name, "sphere", 1)
-            sc.writeToIndex(name + " sphere")
+            sc.sphereScene(name, 1)
         renderAll(1)
 
     @staticmethod
@@ -58,15 +57,10 @@ class tests:
         alt.allImagesToGreyScale(1)
 
 
-#TODO: Improve how indexing works so were don't have to run createscenes->CARATS in that order to maintain the index
-#TODO: Make grey-scale test procedure
-#TODO: fix .DS_Store interaction with file counting
-#TODO: make classification classes more integrated into project instead of 1's and 0's
 
-
-#tests.createScenes()
+tests.createScenes()
 tests.render()
-#tests.CARATS()
-#tests.convertAllToGreyScale()
-#tests.logisticAll()
+tests.CARATS()
+tests.convertAllToGreyScale()
+tests.logisticAll()
 
