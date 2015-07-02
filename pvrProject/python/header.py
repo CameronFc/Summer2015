@@ -19,6 +19,7 @@ class dirs:
     sceneDirectory = "../scenes/"
     templateDirectory = "../templates/"
     index = "../index.txt"
+    pickle = "../data.pkl"
     imageExt = ".png"
     path = os.getcwd() + "/"
 

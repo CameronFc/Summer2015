@@ -1,8 +1,10 @@
 from numpy import random as rng
-import numpy as np
 from header import dirs
 from header import typeSwitcher
 import objectCreator as oc
+import numpy as np
+import pickle
+
 
 def createScene(sceneName, templateName, type=0):
     #TODO replace line below
@@ -24,13 +26,52 @@ def clearIndex():
     with open(dirs.path + dirs.index, "w") as out:
         out.write("")
 
-def writeToIndex(pair):
+def writeToIndex(*args, d=','):
     with open(dirs.path + dirs.index, "a") as out:
-        out.write(pair + "\n")
+        str = ""
+        for x in args:
+            str += x + d
+        #remove last delimeter
+        str = str[:-1]
+        out.write(str + "\n")
+
+def pickleToIndex(dict):
+    with open(dirs.path + dirs.pickle, mode="a+b") as out:
+        pickle.dump(dict, out)
 
 def ltlDebugScene(sceneName, type=0):
+    objC = oc.objectCreator()
+    objC.addSphere([0.0,0.0,0.0], 2, [1,0,0])
+    xyz = np.zeros(3)
+    for index, element in enumerate(xyz):
+        xyz[index] = rng.randn(1) * 10
+    objC.addPointLight(xyz, [1,1,1])
+    dict = {"objects" : {"light": {"position" : xyz}}, "name" : sceneName}
+    sceneFromObjCreator(sceneName, objC, dict, type)
+
+
+def sceneFromObjCreator(sceneName, objC, dict, type):
     with open("./" + dirs.sceneDirectory + typeSwitcher(type) + sceneName + ".pov", "w") as out:
-        objC = oc.objectCreator()
-        objC.addSphere([0.0,0.0,0.0], 2, [1,0,0])
-        objC.addPointLight([3.0,3.0,3.0], [1,1,1])
+        pickleToIndex(dict)
         out.write(objC.scene)
+
+def unPickleIndex():
+    with open(dirs.path + dirs.pickle, "rb") as file:
+        lst = []
+        while 1:
+            try:
+                lst.append(pickle.load(file))
+            except EOFError:
+                break
+        #st.append(pickle.load(file))
+        return lst
+
+def clearPickleIndex():
+    with open(dirs.path + dirs.pickle, "w") as file:
+        file.write("")
+
+#clearIndex()
+#writeToIndex("Cube","[1,1,1]")
+
+#ltlDebugScene("aDebug")
+#print(unPickleIndex())

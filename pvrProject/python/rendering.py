@@ -15,7 +15,10 @@ verboseRender = True
 
 def renderImages(files, type):
     renderCount = 0
-    renderTotal = len(files) #.DS_Store must be excluded? -1 if it is there
+    renderTotal = 0
+    for fileName in files:
+        if fileName[-4:] == ".pov":
+            renderTotal += 1
     startTime = time.time()
     for fileName in files:
             if(fileName[-4:] == ".pov"):

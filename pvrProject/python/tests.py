@@ -13,18 +13,15 @@ import os
 class tests:
     @staticmethod
     def createScenes():
-        sc.clearIndex()
+        sc.clearPickleIndex()
         for i in range(100):
             name = "sphere" + str(i)
-            #sc.createScene(name, "sphere")
             sc.ltlDebugScene(name)
-            sc.writeToIndex(name + " sphere")
         for i in range(100):
             name = "cube" + str(i)
-            #sc.createScene(name, "cube")
             sc.ltlDebugScene(name)
-            sc.writeToIndex(name + " cube")
         print("Completed creating scenes")
+        for i in sc.unPickleIndex(): print(i)
 
     @staticmethod
     def render():
@@ -67,8 +64,8 @@ class tests:
 #TODO: make classification classes more integrated into project instead of 1's and 0's
 
 
-tests.createScenes()
-#tests.render()
+#tests.createScenes()
+tests.render()
 #tests.CARATS()
 #tests.convertAllToGreyScale()
 #tests.logisticAll()

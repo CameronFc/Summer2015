@@ -2,6 +2,7 @@ from header import dirs
 from header import typeSwitcher
 from header import classToInt
 from scipy import misc
+from sceneCreator import unPickleIndex
 import matplotlib.pyplot as plt
 import os
 import numpy as np
@@ -18,10 +19,9 @@ def getClass(imageName):
     #Use some kind of binary search on each line of the index to find the value
     #We might also want to pickle the data if it is convenient
     #return the class of the object if its name is found, otherwise expel error
-    with open(dirs.path + dirs.index, "r") as out:
-        for line in out:
-            if line[:len(imageName)] == imageName:
-                return line[(len(imageName)+1):-1]
+    for scene in unPickleIndex():
+        if scene.name == imageName:
+            return scene
 
 #TODO: Make sure that the files are all of the same dimension before constructing the image array
 #Have some way to specify what images you want to use to construct the array instead of just every png as it is now
@@ -57,7 +57,7 @@ def getAllImages(type):
             #print(np.array(readImage(fileName)))
             #print(dir(readImage(fileName)))
             imageArray.append(readImage(fileName, type).flatten())
-            classArray[processed] = classToInt(getClass(fileName[:-4]))
+            classArray[processed] = getClass(fileName[:-4])
             nameList.append(fileName)
             processed += 1
             #print(classArray[index - 1])
