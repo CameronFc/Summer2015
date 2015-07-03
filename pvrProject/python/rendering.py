@@ -44,5 +44,14 @@ def renderAll(type):
     files = os.listdir(dirs.path + dirs.sceneDirectory + typeSwitcher(type))
     renderImages(files, type)
 
+def renderByName(name, type):
+    files = os.listdir(dirs.path + dirs.sceneDirectory + typeSwitcher(type))
+    desiredFiles = []
+    for file in files:
+        if name in file:
+            desiredFiles.append(file)
+    renderImages(desiredFiles, type)
+
+
 def renderFile(fileName, type):
     renderImages([fileName], type)

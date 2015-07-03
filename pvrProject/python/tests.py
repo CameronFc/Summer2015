@@ -4,6 +4,7 @@ import header
 from rendering import renderAll
 from rendering import renderFile
 from logistic import logistic
+from llnet import llnet
 import sceneCreator as sc
 import format as f
 import alteration as alt
@@ -20,8 +21,16 @@ class tests:
         for i in range(100):
             name = "cube" + str(i)
             sc.cubeScene(name)
-        print("Completed creating scenes")
+        print("Completed creating basic scenes")
         #for i in sc.unPickleIndex(): print(i)
+
+    @staticmethod
+    def createLightScenes():
+        sc.clearPickleIndex()
+        for i in range(100):
+            name = "light" + str(i)
+            sc.ltlDebugScene(name)
+        print("Completed creating light scenes")
 
     @staticmethod
     def render():
@@ -30,8 +39,7 @@ class tests:
 
     @staticmethod
     def logisticAll():
-        imageArray, classArray, nameList = f.getAllImages(0)
-        classifier = logistic(imageArray, classArray, nameList)
+        classifier = logistic(*f.getAllImages(0))
         classifier.beginTraining()
         #for i in range(len(imageArray)):
         #    classifier.classify(imageArray[i])
@@ -42,6 +50,11 @@ class tests:
         classifier.classifyImages(imageArray, classArray, nameList)
         #for file in testImageFiles:
         #    classifier.classify(f.readImage(file, 1), file)
+
+    @staticmethod
+    def llnetAll():
+        estimator = llnet(*f.getAllImages(0))
+        estimator.beginTraining()
 
     @staticmethod
     #Create and render all test spheres
@@ -58,9 +71,11 @@ class tests:
 
 
 
-tests.createScenes()
-tests.render()
-tests.CARATS()
-tests.convertAllToGreyScale()
-tests.logisticAll()
+#tests.createScenes()
+tests.createLightScenes()
+#tests.render()
+#tests.CARATS()
+#tests.convertAllToGreyScale()
+#tests.logisticAll()
+#tests.llnetAll()
 
