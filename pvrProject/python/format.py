@@ -27,14 +27,21 @@ def getClass(imageName):
 #TODO: Make sure that the files are all of the same dimension before constructing the image array
 #Have some way to specify what images you want to use to construct the array instead of just every png as it is now
 #Ok, now it uses the specified image extension properly
-def getAllImages(type):
+def getAllImages(type, name=""):
     files = os.listdir(dirs.path + dirs.imageDirectory + typeSwitcher(type))
+    desiredFiles = []
+    if name != "":
+        for file in files:
+            if name in file:
+                desiredFiles.append(file)
+    else:
+        desiredFiles = files
 
     imageCount = 0
     first = True
     baseImage = []
     #Count all of the images and create a base image to gather array sizes
-    for fileName in files:
+    for fileName in desiredFiles:
         if(fileName[-4:] == dirs.imageExt):
             imageCount += 1
             if first:
@@ -51,7 +58,7 @@ def getAllImages(type):
     classArray = []
     nameList = []
 
-    for index, fileName in enumerate(files):
+    for index, fileName in enumerate(desiredFiles):
         #print(fileName[-4:])
         if(fileName[-4:] == dirs.imageExt):
             #print(np.array(readImage(fileName)))

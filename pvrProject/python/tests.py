@@ -1,14 +1,14 @@
 from header import dirs
 from header import typeSwitcher
 import header
-from rendering import renderAll
-from rendering import renderFile
+import rendering as r
 from logistic import logistic
 from llnet import llnet
 import sceneCreator as sc
 import format as f
 import alteration as alt
 import os
+
 
 
 class tests:
@@ -34,8 +34,12 @@ class tests:
 
     @staticmethod
     def render():
-        renderAll(0)
+        r.renderAll(0)
         print("Completed rendering all " + typeSwitcher(0)[:-1] + " images")
+
+    @staticmethod
+    def renderLights():
+        r.renderByName("light",0)
 
     @staticmethod
     def logisticAll():
@@ -53,8 +57,11 @@ class tests:
 
     @staticmethod
     def llnetAll():
-        estimator = llnet(*f.getAllImages(0))
+        estimator = llnet(*f.getAllImages(0, "light"))
         estimator.beginTraining()
+        imageArray, classArray, names = f.getAllImages(0,"light0")
+        estimator.classify(imageArray[0])
+        print(classArray[0])
 
     @staticmethod
     #Create and render all test spheres
@@ -62,7 +69,7 @@ class tests:
         for i in range(100):
             name = "TestSphere" + str(i)
             sc.sphereScene(name, 1)
-        renderAll(1)
+        r.renderAll(1)
 
     @staticmethod
     def convertAllToGreyScale():
@@ -72,10 +79,11 @@ class tests:
 
 
 #tests.createScenes()
-tests.createLightScenes()
+#tests.createLightScenes()
+#tests.renderLights()
 #tests.render()
 #tests.CARATS()
 #tests.convertAllToGreyScale()
 #tests.logisticAll()
-#tests.llnetAll()
+tests.llnetAll()
 
