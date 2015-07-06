@@ -12,14 +12,14 @@ rng = np.random
 #theano.config.compute_test_value = 'warn'
 
 class hiddenLayer:
-    def __init__(s, input, dims, activation='', L1reg=0.001):
-        s.wBase = rng.randn(*dims)
-        s.w = theano.shared(s.wBase, name='w')
+    def __init__(s, input, dims, activation=None):
+        wBase = rng.randn(*dims)
+        s.w = theano.shared(wBase, name='w')
         s.b = theano.shared(0. , name='b')
-        s.linOutput = T.dot(input, s.w) + s.b
+        linOutput = T.dot(input, s.w) + s.b
         s.output = (
-            s.linOutput if activation == ''
-            else activation(s.linOutput)
+            linOutput if activation is None
+            else activation(linOutput)
         )
         s.params = [s.w,s.b]
 
@@ -43,43 +43,51 @@ class llnet:
 
         s.x = T.matrix("x")
         s.y = T.matrix("y")
-        s.x2 = T.matrix("x2")
+
+        hl = hiddenLayer(s.x, [s.feats, s.f2], T.tanh)
+        ll = hiddenLayer(hl.output, [s.f2, 3])
+        s.params = hl.params + ll.params
 
         #How many weights in the logistic layer? there should be a total of n * 3 neurons here, each with s.feats parameters
-        s.w = theano.shared(rng.randn(s.feats, s.f2), name="w")
+        #s.w = theano.shared(rng.randn(s.feats, s.f2), name="w")
         #In the linear layer, there should be a total of n
-        s.w2 = theano.shared(rng.randn(s.f2, 3), name="w2")
+        #s.w2 = theano.shared(rng.randn(s.f2, 3), name="w2")
 
-        s.b = theano.shared(0., name="b")
-        s.b2 = theano.shared(0., name="b2")
+        #s.b = theano.shared(0., name="b")
+        #s.b2 = theano.shared(0., name="b2")
 
-        s.p_1 = 1 / (1 + T.exp(T.dot(s.x, s.w) + s.b))
+        #s.p_1 = 1 / (1 + T.exp(T.dot(s.x, s.w) + s.b))
 
-        s.l = T.dot(s.p_1, s.w2) + s.b2
+        #s.l = T.dot(s.p_1, s.w2) + s.b2
 
-        s.regularization = L1reg * (abs(s.w).sum() + abs(s.w2).sum())
 
-        s.cost = ((s.l - s.y)**2).sum() + s.regularization
+        s.regularization = 0.0
+        for i in (param.sum() for param in s.params):
+            s.regularization += L1reg * i
 
-        s.prediction = theano.function(inputs=[s.x], outputs=[s.l])
+        s.cost = ((ll.output - s.y)**2).sum() + s.regularization
+
+        s.prediction = theano.function(inputs=[s.x], outputs=[ll.output])
 
         s.getCost = theano.function(inputs=[s.x, s.y], outputs=[s.cost])
 
+        #s.gw, s.gw2, s.gb, s.gb2 = T.grad(s.cost, [s.w, s.w2, s.b, s.b2])
 
-#        s.prediction = s.p_1 > 0.50
+        s.gparams = [T.grad(s.cost, param) for param in s.params]
 
-#        s.xent = -s.y * T.log(s.p_1) - (1-s.y) * T.log(1-s.p_1)
+        s.learningRate = 0.001
 
-#        s.cost = s.xent.mean() + 0.01 * (s.w ** 2).sum()
-
-        s.gw, s.gw2, s.gb, s.gb2 = T.grad(s.cost, [s.w, s.w2, s.b, s.b2])
+        s.updates = [
+            (param, param - s.learningRate * gparam) for param, gparam in zip(s.params,s.gparams)
+        ]
 
         s.train = theano.function(
               inputs=[s.x,s.y],
               outputs=[s.cost],
               #shift each of w,b by their respective gradients
-              updates=((s.w, s.w - 0.1 * s.gw), (s.w2, s.w2 - 0.001 * s.gw2), (s.b, s.b - 0.1 * s.gb), (s.b2, s.b2 - 0.001 * s.gb2)))
-
+              #updates=((s.w, s.w - 0.1 * s.gw), (s.w2, s.w2 - 0.001 * s.gw2), (s.b, s.b - 0.1 * s.gb), (s.b2, s.b2 - 0.001 * s.gb2)))
+              updates=s.updates
+        )
         #s.predict = theano.function(inputs=[s.x], outputs=s.prediction)
 
     def beginTraining(s):
