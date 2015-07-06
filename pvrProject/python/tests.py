@@ -27,7 +27,7 @@ class tests:
     @staticmethod
     def createLightScenes():
         sc.clearPickleIndex()
-        for i in range(100):
+        for i in range(1000):
             name = "light" + str(i)
             sc.ltlDebugScene(name)
         print("Completed creating light scenes")
@@ -59,9 +59,9 @@ class tests:
     def llnetAll():
         estimator = llnet(*f.getAllImages(0, "light"))
         estimator.beginTraining()
-        imageArray, classArray, names = f.getAllImages(0,"light0")
-        estimator.classify(imageArray[0])
-        print(classArray[0])
+        #imageArray, classArray, names = f.getAllImages(0,"light0")
+        #estimator.classify(imageArray)
+        #print(classArray[0])
 
     @staticmethod
     #Create and render all test spheres

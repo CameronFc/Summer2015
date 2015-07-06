@@ -7,12 +7,25 @@ rng = np.random
 
 #Logistic-linear net to estimate the position of lights
 #TODO: change to lights not cube sphere
+#TODO: create feature to store the weights of a learned mlp for storage and later use
 
 #theano.config.compute_test_value = 'warn'
 
+class hiddenLayer:
+    def __init__(s, input, dims, activation='', L1reg=0.001):
+        s.wBase = rng.randn(*dims)
+        s.w = theano.shared(s.wBase, name='w')
+        s.b = theano.shared(0. , name='b')
+        s.linOutput = T.dot(input, s.w) + s.b
+        s.output = (
+            s.linOutput if activation == ''
+            else activation(s.linOutput)
+        )
+        s.params = [s.w,s.b]
+
 class llnet:
-    def __init__(s, imageArray, classArray, nameList, steps = 10):
-        L1reg = 0.001
+    def __init__(s, imageArray, classArray, nameList, steps = 100):
+        L1reg = 0.0001
         s.steps = steps
         s.N = len(imageArray)
         #number of neuron stacks in logistic layer
@@ -25,8 +38,8 @@ class llnet:
         for i in classArray:
             rca.append(i.get("objects").get("light").get("position"))
         #print(rca)
-        #s.D = (imageArray, rca)
-        s.D = (imageArray, np.ones((100,3)) * 0.00001)
+        s.D = (imageArray, rca)
+        #s.D = (imageArray, np.ones((100,3)) * 0.00001)
 
         s.x = T.matrix("x")
         s.y = T.matrix("y")
@@ -50,6 +63,8 @@ class llnet:
 
         s.prediction = theano.function(inputs=[s.x], outputs=[s.l])
 
+        s.getCost = theano.function(inputs=[s.x, s.y], outputs=[s.cost])
+
 
 #        s.prediction = s.p_1 > 0.50
 
@@ -61,27 +76,31 @@ class llnet:
 
         s.train = theano.function(
               inputs=[s.x,s.y],
-              outputs=[],
+              outputs=[s.cost],
               #shift each of w,b by their respective gradients
-              updates=((s.w, s.w - 0.1 * s.gw), (s.w2, s.w2 - 0.1 * s.gw2), (s.b, s.b - 0.1 * s.gb), (s.b2, s.b2 - 0.1 * s.gb2)))
+              updates=((s.w, s.w - 0.1 * s.gw), (s.w2, s.w2 - 0.001 * s.gw2), (s.b, s.b - 0.1 * s.gb), (s.b2, s.b2 - 0.001 * s.gb2)))
 
         #s.predict = theano.function(inputs=[s.x], outputs=s.prediction)
 
     def beginTraining(s):
         #theano.printing.debugprint(s.cost)
+        oldCost = 0.0
         for i in range(s.steps):
-            s.train(s.D[0], s.D[1])
+            currentCost = s.train(s.D[0], s.D[1])[0]
             #Print loop
             if i + 1 == 1 or i + 1 == s.steps or (i + 1) % math.ceil(math.sqrt(s.steps)) == 0:
-                print("Trained " + str(i + 1) + "/" + str(s.steps) + " steps")
+                print("Trained {}/{} steps, cost : {} improvement: {:%}".format(str(i + 1),str(s.steps),currentCost, (oldCost - currentCost)/currentCost))
+                oldCost = currentCost
         #print ("target values for D:", s.D[1])
         #print ("prediction on D:", s.predict(s.D[0]))
         #print ("Differences in target values and prediction:", s.D[1] - s.predict(s.D[0]))
         #print("Correct classifications in training set: " + str(len(s.D[1]) - np.sum(np.abs(s.D[1] - s.predict(s.D[0])))) + "/" + str(len(s.D[1])))
 
-    def classify(s, image):
-        matrixFormatImage = image.reshape(1,s.feats)
-        print("Light position: ", s.prediction(matrixFormatImage))
+    def classify(s, images):
+        #matrixFormatImage = image.reshape(1,s.feats)
+        #print("Light position: ", s.prediction(matrixFormatImage))
+        #print(s.w.get_value(), s.b.get_value(), s.w2.get_value(), s.b2.get_value())
+        print(s.getCost(s.D[0], s.D[1]))
 
 # Train
 #for i in range(training_steps):

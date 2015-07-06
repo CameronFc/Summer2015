@@ -57,19 +57,24 @@ def getAllImages(type, name=""):
     #print(imageArray)
     classArray = []
     nameList = []
+    fileLimit = 10
+    processed = 0;
 
+    print("Loading image files...")
     for index, fileName in enumerate(desiredFiles):
         #print(fileName[-4:])
-        if(fileName[-4:] == dirs.imageExt):
+        if(fileName[-4:] == dirs.imageExt and processed < fileLimit):
             #print(np.array(readImage(fileName)))
             #print(dir(readImage(fileName)))
             imageArray.append(readImage(fileName, type).flatten())
             classArray.append(getClass(fileName[:-4]))
             nameList.append(fileName)
+            processed += 1
             #print(classArray[index - 1])
             #imageArray = np.append(imageArray,readImage(fileName), axis = 1)
             #displayImage(readImage(fileName))
 
+    print("COMPLETED: Loading image files")
     #print(imageArray)
     return imageArray, classArray, nameList
 
