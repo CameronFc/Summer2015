@@ -29,7 +29,7 @@ class llnet:
         s.steps = steps
         s.N = len(imageArray)
         #number of neuron stacks in logistic layer
-        s.f2 = 10
+        s.f2 = 20
         s.nameList = nameList
         #print("length of image array ", len(imageArray))
         s.feats = len(imageArray[0])
@@ -97,7 +97,7 @@ class llnet:
             currentCost = s.train(s.D[0], s.D[1])[0]
             #Print loop
             if i + 1 == 1 or i + 1 == s.steps or (i + 1) % math.ceil(math.sqrt(s.steps)) == 0:
-                print("Trained {}/{} steps, cost : {} improvement: {:%}".format(str(i + 1),str(s.steps),currentCost, (oldCost - currentCost)/currentCost))
+                print("Trained {}/{} steps, cost : {} improvement: +{:%}".format(str(i + 1),str(s.steps),currentCost, (oldCost - currentCost)/currentCost))
                 oldCost = currentCost
         #print ("target values for D:", s.D[1])
         #print ("prediction on D:", s.predict(s.D[0]))

@@ -57,7 +57,7 @@ def getAllImages(type, name=""):
     #print(imageArray)
     classArray = []
     nameList = []
-    fileLimit = 10
+    fileLimit = 50
     processed = 0;
 
     print("Loading image files...")
@@ -74,7 +74,7 @@ def getAllImages(type, name=""):
             #imageArray = np.append(imageArray,readImage(fileName), axis = 1)
             #displayImage(readImage(fileName))
 
-    print("COMPLETED: Loading image files")
+    print("COMPLETED: Loading image files ({})".format(fileLimit))
     #print(imageArray)
     return imageArray, classArray, nameList
 
