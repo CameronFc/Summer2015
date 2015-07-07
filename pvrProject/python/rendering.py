@@ -4,9 +4,11 @@ import math
 import os
 from header import dirs
 from header import typeSwitcher
+from header import animSwitcher
 from subprocess import call
 from subprocess import check_output
 from subprocess import STDOUT
+import format
 
 #TODO: Mae this actually verobose instead of just errors
 verboseRender = True
@@ -17,6 +19,10 @@ class Renderer:
                             "-GA",
                             "+KFF" + str(frames)
                          ]
+        self.animType = (
+            0 if frames == -1
+            else 1
+        )
 
     def renderImages(self, files, type):
         renderCount = 0
@@ -59,3 +65,18 @@ class Renderer:
 
     def renderFile(self, fileName, type):
         self.renderImages([fileName], type)
+
+    def appendImages(self, name, type=0):
+        formatter = format.Formatter()
+        path = dirs.imageDirectory + typeSwitcher(type)
+        files = formatter.getDesiredFiles("./" + path, name)
+        commandFiles = list((path + file)for file in files)
+        #print(commandFiles)
+        print("Num files appended: {}".format(len(commandFiles)))
+        #put the concatenated images into the anim directory
+        commandArray = ["convert", "+append", path + animSwitcher(self.animType) + name + dirs.imageExt]
+        commandArray[1:1] = commandFiles
+        #print(commandArray)
+        returnCode = call(commandArray)
+        if returnCode != 0:
+            print("Fatal error during image concatenation!")

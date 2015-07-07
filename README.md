@@ -9,6 +9,7 @@ Installation Instructions:
 ```
 install homebrew
 brew install povray
+brew install imagemagick
 
 sudo apt-get install python3-pip
 pip3 install scipy

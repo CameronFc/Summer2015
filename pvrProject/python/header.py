@@ -30,6 +30,14 @@ def typeSwitcher(x):
         '2': "validation/"
     }.get(str(x),"")
 
+#Are we creating an animated scene?
+def animSwitcher(x):
+    return {
+        '0': "",
+        '1': "anim/"
+    }.get(str(x),"")
+
+
 classes = {
         'sphere': 0,
         'cube': 1

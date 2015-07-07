@@ -5,11 +5,9 @@ import rendering as r
 from logistic import Logistic
 from llnet import LLnet
 import sceneCreator as sc
-import format as f
+import format
 import alteration as alt
 import os
-
-
 
 class tests:
     @staticmethod
@@ -45,21 +43,23 @@ class tests:
 
     @staticmethod
     def logisticAll():
-        classifier = Logistic(*f.getAllImages(0))
+        formatter = format.Formatter(animType=0)
+        classifier = Logistic(*formatter.getAllImages(0))
         classifier.beginTraining()
         #for i in range(len(imageArray)):
         #    classifier.classify(imageArray[i])
         #classifier.classify(readImage("TestSphere.png", 1), "TestSphere.png")
         testImageFiles = os.listdir(dirs.path + dirs.imageDirectory + typeSwitcher(1))
         #get the test images
-        imageArray, classArray, nameList = f.getAllImages(1)
+        imageArray, classArray, nameList = formatter.getAllImages(1)
         classifier.classifyImages(imageArray, classArray, nameList)
         #for file in testImageFiles:
         #    classifier.classify(f.readImage(file, 1), file)
 
     @staticmethod
     def llnetAll():
-        estimator = LLnet(*f.getAllImages(0, "light"))
+        formatter = format.Formatter(animType=1)
+        estimator = LLnet(*formatter.getAllImages(0, "TestAnimation"))
         estimator.beginTraining()
         #imageArray, classArray, names = f.getAllImages(0,"light0")
         #estimator.classify(imageArray)
@@ -80,24 +80,26 @@ class tests:
         alt.allImagesToGreyScale(1)
 
     @staticmethod
-    def createAnimScenes():
-        name = "TestAnimation"
-        sc.createBasicAnimation(name, 0)
-
-    @staticmethod
-    def renderAnimScenes():
-        renderer = r.Renderer(frames=20)
-        renderer.renderByName("TestAnimation", 0)
+    def CARAS():
+        for i in range(20):
+            #need a delimiter to separate scene# from frame#
+            delim = "D"
+            name = "TestAnimation" + str(i) + delim
+            sc.createBasicAnimation(name, 0)
+            renderer = r.Renderer(frames=20)
+            renderer.renderByName(name, 0)
+            renderer.appendImages(name, 0)
+        print("Completed Anim rendering")
 
 
 #tests.createScenes()
 #tests.createLightScenes()
-tests.createAnimScenes()
-tests.renderAnimScenes()
+#tests.createAnimScenes()
+#tests.CARAS()
 #tests.renderLights()
 #tests.render()
 #tests.CARATS()
 #tests.convertAllToGreyScale()
 #tests.logisticAll()
-#tests.llnetAll()
+tests.llnetAll()
 

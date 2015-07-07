@@ -84,4 +84,3 @@ camera {
 #objC.addRectPrism([0,1,2], [1,1,1], [1.0,0.5,0.3])
 #objC.addPlane([0,1,2], [3,4], [1.0,0.5,0.3])
 #objC.addPointLight([3,3,3], [0.1,0.2,0.5])
-

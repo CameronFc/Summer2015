@@ -24,12 +24,12 @@ class HiddenLayer:
         s.params = [s.w,s.b]
 
 class LLnet:
-    def __init__(s, imageArray, classArray, nameList, steps = 100):
+    def __init__(s, imageArray, classArray, nameList, steps = 20):
         L1reg = 0.0001
         s.steps = steps
         s.N = len(imageArray)
         #number of neuron stacks in logistic layer
-        s.f2 = 20
+        s.f2 = 10
         s.nameList = nameList
         #print("length of image array ", len(imageArray))
         s.feats = len(imageArray[0])
