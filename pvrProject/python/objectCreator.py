@@ -9,7 +9,7 @@
 #6-7 shapes cone plane shpere cube cylinder , 2D versions
 #Different objects rotation position finish
 #directional and point lights
-class objectCreator:
+class ObjectCreator:
     def __init__(self):
         self.scene = ""
         self.scene+= """global_settings {
@@ -21,9 +21,9 @@ camera {
    look_at   <0, 0, 0>
 }\n"""
 
-
-    def addSphere(self, xyz, size, color):
+    def addSphere(self, xyz, size, color, rot=None):
         pos = "<{0},{1},{2}>".format(*xyz)
+        rotStr = self.getRotStr(rot)
         str = """sphere {{ {0}, {2}
     finish {{
       ambient 0.2
@@ -31,11 +31,13 @@ camera {
       phong 1
     }}
     pigment {{ color red {1[0]} green {1[1]} blue {1[2]} }}
-}}\n""".format(pos, color, size)
+    {3}
+}}\n""".format(pos, color, size, rotStr)
         self.scene += str
         #print(self.scene)
 
-    def addRectPrism(self, xyz, lwh, color):
+    def addRectPrism(self, xyz, lwh, color, rot=None):
+        rotStr = self.getRotStr(rot)
         pos = "<{0},{1},{2}>".format(*xyz)
         nHalfSizes = "<{0},{1},{2}>".format(*[-x / 2 for x in lwh])
         sizes = "<{0},{1},{2}>".format(*lwh)
@@ -48,14 +50,15 @@ camera {
     pigment {{ color red {1[0]} green {1[1]} blue {1[2]} }}
     translate {0}
     translate {3}
+    {4}
     rotate <-20, 30, 0>
-}}\n""".format(pos, color, sizes, nHalfSizes)
+}}\n""".format(pos, color, sizes, nHalfSizes, rotStr)
         self.scene += str
         #print(self.scene)
 
-    def addPlane(self, xyz, lw, color):
+    def addPlane(self, xyz, lw, color, rot=None):
         lw.append(0.1)
-        self.addRectPrism(xyz,lw,color)
+        self.addRectPrism(xyz,lw,color, rot)
 
     #points at origin by default, has some other parameters set by default as well
     def addPointLight(self, xyz, color):
@@ -65,9 +68,20 @@ camera {
         self.scene += str
         #print(self.scene)
 
-objC = objectCreator()
+    def getRotStr(self, rot):
+        if rot != None:
+            #Rotation amounts by clock cycle
+            rotScale = list((str(i) + "*clock")for i in rot)
+            rotStr = "rotate <{},{},{}>".format(*rotScale)
+            return rotStr
+        else:
+            return ""
+        #print(")
+
+
+#objC = objectCreator()
 #objC.addSphere([0,1,2], 3, [1.0,0.5,0.3])
-objC.addRectPrism([0,1,2], [1,1,1], [1.0,0.5,0.3])
-objC.addPlane([0,1,2], [3,4], [1.0,0.5,0.3])
-objC.addPointLight([3,3,3], [0.1,0.2,0.5])
+#objC.addRectPrism([0,1,2], [1,1,1], [1.0,0.5,0.3])
+#objC.addPlane([0,1,2], [3,4], [1.0,0.5,0.3])
+#objC.addPointLight([3,3,3], [0.1,0.2,0.5])
 

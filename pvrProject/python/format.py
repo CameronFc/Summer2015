@@ -58,7 +58,7 @@ def getAllImages(type, name=""):
     classArray = []
     nameList = []
     fileLimit = 50
-    processed = 0;
+    processed = 0
 
     print("Loading image files...")
     for index, fileName in enumerate(desiredFiles):

@@ -40,11 +40,19 @@ def pickleToIndex(dict):
         pickle.dump(dict, out)
 
 def ltlDebugScene(sceneName, type=0):
-    objC = oc.objectCreator()
+    objC = oc.ObjectCreator()
     objC.addSphere([0.0,0.0,0.0], 2, [1,0,0])
     xyz = np.zeros(3)
     for index, element in enumerate(xyz):
         xyz[index] = rng.randn(1) * 10
+    objC.addPointLight(xyz, [1,1,1])
+    dict = {"objects" : {"light": {"position" : xyz}}, "name" : sceneName}
+    sceneFromObjCreator(sceneName, objC, dict, type)
+
+def createBasicAnimation(sceneName, type=0):
+    objC = oc.ObjectCreator()
+    objC.addRectPrism([0.0,0.0,0.0], [1.5,1.5,1.5], [1,0,0], [0,360,0])
+    xyz=getxyz(10)
     objC.addPointLight(xyz, [1,1,1])
     dict = {"objects" : {"light": {"position" : xyz}}, "name" : sceneName}
     sceneFromObjCreator(sceneName, objC, dict, type)
@@ -58,7 +66,7 @@ def getxyz(scale):
     return xyz
 
 def cubeScene(sceneName, type=0):
-    objC = oc.objectCreator()
+    objC = oc.ObjectCreator()
     objC.addRectPrism([0.0,0.0,0.0], [1.5,1.5,1.5], [1,0,0])
     for i in range(3):
         xyz = getxyz(10)
@@ -67,7 +75,7 @@ def cubeScene(sceneName, type=0):
     sceneFromObjCreator(sceneName, objC, dict, type)
 
 def sphereScene(sceneName, type=0):
-    objC = oc.objectCreator()
+    objC = oc.ObjectCreator()
     objC.addSphere([0.0,0.0,0.0], 2, [1,0,0])
     for i in range(3):
         xyz = getxyz(10)

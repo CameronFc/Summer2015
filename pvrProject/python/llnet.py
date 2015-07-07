@@ -11,7 +11,7 @@ rng = np.random
 
 #theano.config.compute_test_value = 'warn'
 
-class hiddenLayer:
+class HiddenLayer:
     def __init__(s, input, dims, activation=None):
         wBase = rng.randn(*dims)
         s.w = theano.shared(wBase, name='w')
@@ -23,7 +23,7 @@ class hiddenLayer:
         )
         s.params = [s.w,s.b]
 
-class llnet:
+class LLnet:
     def __init__(s, imageArray, classArray, nameList, steps = 100):
         L1reg = 0.0001
         s.steps = steps
@@ -44,8 +44,8 @@ class llnet:
         s.x = T.matrix("x")
         s.y = T.matrix("y")
 
-        hl = hiddenLayer(s.x, [s.feats, s.f2], T.tanh)
-        ll = hiddenLayer(hl.output, [s.f2, 3])
+        hl = HiddenLayer(s.x, [s.feats, s.f2], T.tanh)
+        ll = HiddenLayer(hl.output, [s.f2, 3])
         s.params = hl.params + ll.params
 
         #How many weights in the logistic layer? there should be a total of n * 3 neurons here, each with s.feats parameters

@@ -2,8 +2,8 @@ from header import dirs
 from header import typeSwitcher
 import header
 import rendering as r
-from logistic import logistic
-from llnet import llnet
+from logistic import Logistic
+from llnet import LLnet
 import sceneCreator as sc
 import format as f
 import alteration as alt
@@ -34,16 +34,18 @@ class tests:
 
     @staticmethod
     def render():
-        r.renderAll(0)
+        renderer = r.Renderer()
+        renderer.renderAll(0)
         print("Completed rendering all " + typeSwitcher(0)[:-1] + " images")
 
     @staticmethod
     def renderLights():
-        r.renderByName("light",0)
+        renderer = r.Renderer()
+        renderer.renderByName("light",0)
 
     @staticmethod
     def logisticAll():
-        classifier = logistic(*f.getAllImages(0))
+        classifier = Logistic(*f.getAllImages(0))
         classifier.beginTraining()
         #for i in range(len(imageArray)):
         #    classifier.classify(imageArray[i])
@@ -57,7 +59,7 @@ class tests:
 
     @staticmethod
     def llnetAll():
-        estimator = llnet(*f.getAllImages(0, "light"))
+        estimator = LLnet(*f.getAllImages(0, "light"))
         estimator.beginTraining()
         #imageArray, classArray, names = f.getAllImages(0,"light0")
         #estimator.classify(imageArray)
@@ -69,21 +71,33 @@ class tests:
         for i in range(100):
             name = "TestSphere" + str(i)
             sc.sphereScene(name, 1)
-        r.renderAll(1)
+        renderer = r.Renderer()
+        renderer.renderAll(1)
 
     @staticmethod
     def convertAllToGreyScale():
         alt.allImagesToGreyScale(0)
         alt.allImagesToGreyScale(1)
 
+    @staticmethod
+    def createAnimScenes():
+        name = "TestAnimation"
+        sc.createBasicAnimation(name, 0)
+
+    @staticmethod
+    def renderAnimScenes():
+        renderer = r.Renderer(frames=20)
+        renderer.renderByName("TestAnimation", 0)
 
 
 #tests.createScenes()
 #tests.createLightScenes()
+tests.createAnimScenes()
+tests.renderAnimScenes()
 #tests.renderLights()
 #tests.render()
 #tests.CARATS()
 #tests.convertAllToGreyScale()
 #tests.logisticAll()
-tests.llnetAll()
+#tests.llnetAll()
 
