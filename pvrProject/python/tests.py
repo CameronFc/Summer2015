@@ -25,7 +25,7 @@ class tests:
     @staticmethod
     def createLightScenes():
         sc.clearPickleIndex()
-        for i in range(1000):
+        for i in range(100):
             name = "light" + str(i)
             sc.ltlDebugScene(name)
         print("Completed creating light scenes")
@@ -59,7 +59,7 @@ class tests:
     @staticmethod
     def llnetAll():
         formatter = format.Formatter(animType=1)
-        estimator = LLnet(*formatter.getAllImages(0, "TestAnimation"))
+        estimator = LLnet(*formatter.getAllImages(0, "light1"))
         estimator.beginTraining()
         #imageArray, classArray, names = f.getAllImages(0,"light0")
         #estimator.classify(imageArray)
@@ -81,6 +81,7 @@ class tests:
 
     @staticmethod
     def CARAS():
+        sc.clearPickleIndex()
         for i in range(20):
             #need a delimiter to separate scene# from frame#
             delim = "D"
@@ -103,3 +104,5 @@ class tests:
 #tests.logisticAll()
 tests.llnetAll()
 
+#renderer = r.Renderer(1)
+#renderer.appendImages("light1", 0)

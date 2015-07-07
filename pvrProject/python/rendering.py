@@ -15,9 +15,15 @@ verboseRender = True
 
 class Renderer:
     def __init__(self, frames=-1, clockFinal=0):
+
+        #Can't include +KFF-1 in command line as this appends '1' to the end of every file
+        frameParam = (
+            "+KFF" + str(frames) if frames != -1
+            else ""
+        )
         self.callArrayOptions = [
                             "-GA",
-                            "+KFF" + str(frames)
+                            frameParam
                          ]
         self.animType = (
             0 if frames == -1

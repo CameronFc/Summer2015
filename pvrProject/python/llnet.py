@@ -28,16 +28,17 @@ class LLnet:
         L1reg = 0.0001
         s.steps = steps
         s.N = len(imageArray)
+        print(imageArray)
         #number of neuron stacks in logistic layer
         s.f2 = 10
         s.nameList = nameList
-        #print("length of image array ", len(imageArray))
+        print("length of image array ", len(imageArray))
         s.feats = len(imageArray[0])
-        #print("length of images ", len(imageArray[0]))
+        print("length of images ", len(imageArray[0]))
         rca = []
         for i in classArray:
             rca.append(i.get("objects").get("light").get("position"))
-        #print(rca)
+        print(rca)
         s.D = (imageArray, rca)
         #s.D = (imageArray, np.ones((100,3)) * 0.00001)
 
@@ -91,6 +92,7 @@ class LLnet:
         #s.predict = theano.function(inputs=[s.x], outputs=s.prediction)
 
     def beginTraining(s):
+        #print(len(s.D[1]), len(s.D[1][0]))
         #theano.printing.debugprint(s.cost)
         oldCost = 0.0
         for i in range(s.steps):

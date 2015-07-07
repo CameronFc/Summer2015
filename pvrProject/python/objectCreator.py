@@ -9,10 +9,14 @@
 #6-7 shapes cone plane shpere cube cylinder , 2D versions
 #Different objects rotation position finish
 #directional and point lights
+
+#TODO: Clean up formatiing of these so people can actually read them; Maybe add templates?
+
 class ObjectCreator:
     def __init__(self):
         self.scene = ""
-        self.scene+= """global_settings {
+        self.scene+= """
+global_settings {
   assumed_gamma 2.2
 }
 camera {
@@ -24,7 +28,8 @@ camera {
     def addSphere(self, xyz, size, color, rot=None):
         pos = "<{0},{1},{2}>".format(*xyz)
         rotStr = self.getRotStr(rot)
-        str = """sphere {{ {0}, {2}
+        str = """
+sphere {{ {0}, {2}
     finish {{
       ambient 0.2
       diffuse 0.8
@@ -41,7 +46,8 @@ camera {
         pos = "<{0},{1},{2}>".format(*xyz)
         nHalfSizes = "<{0},{1},{2}>".format(*[-x / 2 for x in lwh])
         sizes = "<{0},{1},{2}>".format(*lwh)
-        str = """box {{ <0.0, 0.0, 0.0>, {2}
+        str = """
+box {{ <0.0, 0.0, 0.0>, {2}
     finish {{
        ambient 0.2
        diffuse 0.8
