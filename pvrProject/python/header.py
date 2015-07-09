@@ -16,25 +16,29 @@ import os
 
 class dirs:
     imageDirectory = "../images/"
+    imageExt = ".tga"
     sceneDirectory = "../scenes/"
+    sceneExt = ".pov"
     templateDirectory = "../templates/"
+    templateExt = ".txt"
+    savedDataDirectory = "../netParams/"
+    savedDataExt = ".txt"
     index = "../index.txt"
     pickle = "../data.pkl"
-    imageExt = ".png"
     path = os.getcwd() + "/"
 
 def typeSwitcher(x):
     return {
-        '0': "training/",
-        '1': "tests/",
-        '2': "validation/"
+        'PTRAIN': "training/",
+        'PTESTS': "tests/",
+        'PVALID': "validation/"
     }.get(str(x),"")
 
 #Are we creating an animated scene?
 def animSwitcher(x):
     return {
-        '0': "",
-        '1': "anim/"
+        'PSTATIC': "",
+        'PANIM': "anim/"
     }.get(str(x),"")
 
 

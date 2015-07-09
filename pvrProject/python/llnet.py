@@ -2,7 +2,10 @@ import numpy as np
 import theano
 import theano.tensor as T
 import math
-import header
+import sys
+import pickle
+from time import strftime
+from header import dirs
 rng = np.random
 
 #Logistic-linear net to estimate the position of lights
@@ -24,21 +27,32 @@ class HiddenLayer:
         s.params = [s.w,s.b]
 
 class LLnet:
-    def __init__(s, imageArray, classArray, nameList, steps = 20):
+    def __init__(s, imageArray, classArray, nameList, steps = 10):
         L1reg = 0.0001
+        s.learningRate = 0.001
+        s.f2 = 10
+        s.outDim = 3
+
+        #Check to see if the images are all of the smae size, abort otherwise
+        baseImageLength = len(imageArray[0])
+        for index, element in enumerate(imageArray):
+            if(len(element) != baseImageLength):
+                print("FATAL ERROR: Image [{}] of size ({}) is not the same size of the base image ({})".format(index,len(element),baseImageLength))
+                sys.exit(0)
+
         s.steps = steps
         s.N = len(imageArray)
-        print(imageArray)
+        #print(imageArray)
         #number of neuron stacks in logistic layer
-        s.f2 = 10
         s.nameList = nameList
-        print("length of image array ", len(imageArray))
+        #print("length of image array ", len(imageArray))
         s.feats = len(imageArray[0])
-        print("length of images ", len(imageArray[0]))
+        #print("length of image 1 ", len(imageArray[0]))
+        #print("length of image 2 ", len(imageArray[1]))
         rca = []
         for i in classArray:
             rca.append(i.get("objects").get("light").get("position"))
-        print(rca)
+        #print(rca)
         s.D = (imageArray, rca)
         #s.D = (imageArray, np.ones((100,3)) * 0.00001)
 
@@ -46,7 +60,7 @@ class LLnet:
         s.y = T.matrix("y")
 
         hl = HiddenLayer(s.x, [s.feats, s.f2], T.tanh)
-        ll = HiddenLayer(hl.output, [s.f2, 3])
+        ll = HiddenLayer(hl.output, [s.f2, s.outDim])
         s.params = hl.params + ll.params
 
         #How many weights in the logistic layer? there should be a total of n * 3 neurons here, each with s.feats parameters
@@ -75,8 +89,6 @@ class LLnet:
         #s.gw, s.gw2, s.gb, s.gb2 = T.grad(s.cost, [s.w, s.w2, s.b, s.b2])
 
         s.gparams = [T.grad(s.cost, param) for param in s.params]
-
-        s.learningRate = 0.001
 
         s.updates = [
             (param, param - s.learningRate * gparam) for param, gparam in zip(s.params,s.gparams)
@@ -111,6 +123,11 @@ class LLnet:
         #print("Light position: ", s.prediction(matrixFormatImage))
         #print(s.w.get_value(), s.b.get_value(), s.w2.get_value(), s.b2.get_value())
         print(s.getCost(s.D[0], s.D[1]))
+
+    def saveParams(s):
+        name = strftime("%Y-%m-%d_%H-%M-%S")
+        with open(dirs.path + dirs.savedDataDirectory + name + dirs.savedDataExt, 'a+b') as out:
+                pickle.dump(s.params, out)
 
 # Train
 #for i in range(training_steps):

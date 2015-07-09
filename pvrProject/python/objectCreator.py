@@ -1,4 +1,4 @@
-
+from templates import Tstrings as temps
 
 #Object generator for scene files for povray
 
@@ -10,55 +10,25 @@
 #Different objects rotation position finish
 #directional and point lights
 
-#TODO: Clean up formatiing of these so people can actually read them; Maybe add templates?
-
 class ObjectCreator:
     def __init__(self):
-        self.scene = ""
-        self.scene+= """
-global_settings {
-  assumed_gamma 2.2
-}
-camera {
-   location  <0, 0, -8>
-   direction <0, 0, 1.2071>
-   look_at   <0, 0, 0>
-}\n"""
+        self.scene = temps.getTemplateString("init")
+        #Vector string for fomatting use
+        self.VString = "<{0},{1},{2}>"
 
     def addSphere(self, xyz, size, color, rot=None):
-        pos = "<{0},{1},{2}>".format(*xyz)
+        pos = self.Vstring.format(*xyz)
         rotStr = self.getRotStr(rot)
-        str = """
-sphere {{ {0}, {2}
-    finish {{
-      ambient 0.2
-      diffuse 0.8
-      phong 1
-    }}
-    pigment {{ color red {1[0]} green {1[1]} blue {1[2]} }}
-    {3}
-}}\n""".format(pos, color, size, rotStr)
+        str = temps.getTemplateString("sphere").format(position=pos, color=color, size=size, rotString=rotStr)
         self.scene += str
         #print(self.scene)
 
     def addRectPrism(self, xyz, lwh, color, rot=None):
         rotStr = self.getRotStr(rot)
-        pos = "<{0},{1},{2}>".format(*xyz)
-        nHalfSizes = "<{0},{1},{2}>".format(*[-x / 2 for x in lwh])
-        sizes = "<{0},{1},{2}>".format(*lwh)
-        str = """
-box {{ <0.0, 0.0, 0.0>, {2}
-    finish {{
-       ambient 0.2
-       diffuse 0.8
-       phong 1
-    }}
-    pigment {{ color red {1[0]} green {1[1]} blue {1[2]} }}
-    translate {0}
-    translate {3}
-    {4}
-    rotate <-20, 30, 0>
-}}\n""".format(pos, color, sizes, nHalfSizes, rotStr)
+        pos = self.VString.format(*xyz)
+        nHalfSizes = self.VString.format(*[-x / 2 for x in lwh])
+        sizes = self.VString.format(*lwh)
+        str = temps.getTemplateString("rectPrism").format(position=pos, color=color, endPoint=sizes, halfPosition=nHalfSizes, rotString=rotStr)
         self.scene += str
         #print(self.scene)
 
@@ -68,7 +38,7 @@ box {{ <0.0, 0.0, 0.0>, {2}
 
     #points at origin by default, has some other parameters set by default as well
     def addPointLight(self, xyz, color):
-        pos = "<{0},{1},{2}>".format(*xyz)
+        pos = self.VString.format(*xyz)
         colors = "color red {0} green {1} blue {2}".format(*color)
         str = "light_source {{ {0} {1} }} \n".format(pos, colors)
         self.scene += str
@@ -78,7 +48,7 @@ box {{ <0.0, 0.0, 0.0>, {2}
         if rot != None:
             #Rotation amounts by clock cycle
             rotScale = list((str(i) + "*clock")for i in rot)
-            rotStr = "rotate <{},{},{}>".format(*rotScale)
+            rotStr = "<{},{},{}>".format(*rotScale)
             return rotStr
         else:
             return ""

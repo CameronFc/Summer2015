@@ -26,19 +26,19 @@ class Renderer:
                             frameParam
                          ]
         self.animType = (
-            0 if frames == -1
-            else 1
+            "PSTATIC" if frames == -1
+            else "PANIM"
         )
 
     def renderImages(self, files, type):
         renderCount = 0
         renderTotal = 0
         for fileName in files:
-            if fileName[-4:] == ".pov":
+            if fileName[-(len(dirs.sceneExt)):] == dirs.sceneExt:
                 renderTotal += 1
         startTime = time.time()
         for fileName in files:
-                if(fileName[-4:] == ".pov"):
+                if(fileName[-(len(dirs.sceneExt)):] == dirs.sceneExt):
                     sceneName = fileName[:-4]
                     callArray = ["povray", "./" + dirs.sceneDirectory + typeSwitcher(type) + fileName,
                                  "+O" + dirs.path + dirs.imageDirectory + typeSwitcher(type) + sceneName] + (self.callArrayOptions)
@@ -72,7 +72,7 @@ class Renderer:
     def renderFile(self, fileName, type):
         self.renderImages([fileName], type)
 
-    def appendImages(self, name, type=0):
+    def appendImages(self, name, type="PTRAIN"):
         formatter = format.Formatter()
         path = dirs.imageDirectory + typeSwitcher(type)
         files = formatter.getDesiredFiles("./" + path, name)

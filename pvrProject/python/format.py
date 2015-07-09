@@ -6,12 +6,13 @@ from scipy import misc
 from sceneCreator import unPickleIndex
 import matplotlib.pyplot as plt
 import os
+import sys
 import numpy as np
 
 #TODO: Make getDesiredFiles static, it's irrespective of everything
 
 class Formatter:
-    def __init__(self, animType=0):
+    def __init__(self, animType="PSTATIC"):
         self.animType = animType
 
     def readImage(self, name, type):
@@ -29,7 +30,7 @@ class Formatter:
             #print("Scene name of pickled scene", scene.get("name"))
             if scene.get("name") == imageName:
                 return scene
-        print("Failed to locate class data of image" + imageName)
+        print("Failed to locate class data of image " + imageName)
 
     def getDesiredFiles(self, path, name):
         files = os.listdir(path)
@@ -45,14 +46,16 @@ class Formatter:
     #TODO: Make sure that the files are all of the same dimension before constructing the image array
     #Have some way to specify what images you want to use to construct the array instead of just every png as it is now
     #Ok, now it uses the specified image extension properly
-    def getAllImages(self, type, name=""):
+    def getAllImages(self, type, name="", fileLimit=None):
+        if fileLimit == None:
+            fileLimit = sys.maxsize
         desiredFiles = self.getDesiredFiles(dirs.path + dirs.imageDirectory + typeSwitcher(type) + animSwitcher(self.animType), name)
         imageCount = 0
         first = True
         baseImage = []
         #Count all of the images and create a base image to gather array sizes
         for fileName in desiredFiles:
-            if(fileName[-4:] == dirs.imageExt):
+            if(fileName[-(len(dirs.imageExt)):] == dirs.imageExt):
                 imageCount += 1
                 if first:
                     baseImage = self.readImage(fileName, type)
@@ -67,7 +70,8 @@ class Formatter:
         #print(imageArray)
         classArray = []
         nameList = []
-        fileLimit = 50
+        #Use this to change the maximum number of images that can be feed into the 'net,
+        # no matter how many images exist in the folder of the same name type
         processed = 0
 
         print("Loading image files...")
@@ -103,3 +107,4 @@ class Formatter:
 #print(readImage("genesis9.png")[60,43])
 #print(imageArray[10][60,43])
 #formatImageData(im, 0)
+

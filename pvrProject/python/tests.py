@@ -58,9 +58,11 @@ class tests:
 
     @staticmethod
     def llnetAll():
-        formatter = format.Formatter(animType=1)
-        estimator = LLnet(*formatter.getAllImages(0, "light1"))
+        fileLimit = 10
+        formatter = format.Formatter(animType="PANIM")
+        estimator = LLnet(*formatter.getAllImages("PTRAIN", "TestAnimation", fileLimit))
         estimator.beginTraining()
+        estimator.saveParams()
         #imageArray, classArray, names = f.getAllImages(0,"light0")
         #estimator.classify(imageArray)
         #print(classArray[0])
@@ -82,16 +84,21 @@ class tests:
     @staticmethod
     def CARAS():
         sc.clearPickleIndex()
-        for i in range(20):
+        frames = 20
+        numAnims = 100
+        for i in range(numAnims):
             #need a delimiter to separate scene# from frame#
             delim = "D"
             name = "TestAnimation" + str(i) + delim
-            sc.createBasicAnimation(name, 0)
-            renderer = r.Renderer(frames=20)
-            renderer.renderByName(name, 0)
-            renderer.appendImages(name, 0)
+            #bugfix
+            sc.createBasicAnimation(name, "PTRAIN")
+            # sc.createBasicAnimation(name, 0)
+            renderer = r.Renderer(frames=frames)
+            renderer.renderByName(name, "PTRAIN")
+            renderer.appendImages(name, "PTRAIN")
         print("Completed Anim rendering")
 
+#TODO: Make sure changes, now with templating, works (objC)
 
 #tests.createScenes()
 #tests.createLightScenes()
@@ -103,6 +110,3 @@ class tests:
 #tests.convertAllToGreyScale()
 #tests.logisticAll()
 tests.llnetAll()
-
-#renderer = r.Renderer(1)
-#renderer.appendImages("light1", 0)
