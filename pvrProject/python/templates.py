@@ -8,4 +8,4 @@ class Tstrings:
         with open(dirs.path + dirs.templateDirectory + name + dirs.templateExt, "r") as file:
             for line in file:
                 str += (line)
-        return str
+        return str + "\n"

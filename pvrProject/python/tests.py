@@ -58,18 +58,24 @@ class tests:
 
     @staticmethod
     def llnetAll():
-        fileLimit = 5
+        file_limit = 10
+        steps = 100
         formatter = format.Formatter(animType="PANIM")
         LLNetOptions = {
             'learningRate' : 0.001,
-            'steps' : 5,
-            'f2' : 2
+            'f2' : 200
         }
-        estimator = LLnet(*formatter.getAllImages("PTRAIN", "TestAnimation", fileLimit), **LLNetOptions)
-        estimator.beginTraining()
-        name = estimator.saveParams()
-        estimator.loadParams(name)
-        estimator.beginTraining()
+        # Get the list of the pixels
+        train_set_x, train_set_y = formatter.get_dataset(type="PTRAIN", name="TestAnimation", file_limit=file_limit)
+        for index, dict in enumerate(train_set_y):
+            train_set_y[index] = dict.get("objects").get("light").get("position")
+        # Get pixels * depth of the image
+        input_dim = len(train_set_x[0])
+        estimator = LLnet(n_in=input_dim,n_out=3, n_hidden=10,**LLNetOptions)
+        estimator.beginTraining(train_set_x, train_set_y, steps=steps)
+        #name = estimator.saveParams()
+        #estimator.loadParams(name)
+        #estimator.beginTraining()
         #imageArray, classArray, names = f.getAllImages(0,"light0")
         #estimator.classify(imageArray)
         #print(classArray[0])
@@ -106,6 +112,8 @@ class tests:
         print("Completed Anim rendering")
 
 #TODO: Make sure changes, now with templating, works (objC)
+#TODO: Clean up code so things are readable, in correct pythonic format in free time
+#TODO: Change to completely uncompressed targa format, disallow unlike images
 
 #tests.createScenes()
 #tests.createLightScenes()

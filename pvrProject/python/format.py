@@ -15,8 +15,8 @@ class Formatter:
     def __init__(self, animType="PSTATIC"):
         self.animType = animType
 
-    def readImage(self, name, type):
-        return misc.imread(dirs.imageDirectory + typeSwitcher(type) + animSwitcher(self.animType) + name)
+    def readImage(self, pathname):
+        return misc.imread(pathname)
 
     def displayImage(self, image):
         plt.imshow(image, cmap=plt.cm.gray)
@@ -35,62 +35,81 @@ class Formatter:
     def getDesiredFiles(self, path, name):
         files = os.listdir(path)
         desiredFiles = []
+        fileNames = []
         if name != "":
             for file in files:
                 if name in file:
-                    desiredFiles.append(file)
+                    desiredFiles.append(path + file)
+                    fileNames.append(file[:-(len(dirs.imageExt))])
         else:
-            desiredFiles = files
-        return desiredFiles
+            #TODO: Clean me up
+            print("SPECIFIY A NAME!")
+            sys.exit(0)
+        #    desiredFiles = [(path + file) for file in files]
+        return desiredFiles, fileNames
+
+    def getImage(self, name, type):
+        return [self.readImage(name, type)], [self.getClass(name)], [name]
+
 
     #TODO: Make sure that the files are all of the same dimension before constructing the image array
     #Have some way to specify what images you want to use to construct the array instead of just every png as it is now
     #Ok, now it uses the specified image extension properly
-    def getAllImages(self, type, name="", fileLimit=None):
-        if fileLimit == None:
-            fileLimit = sys.maxsize
-        desiredFiles = self.getDesiredFiles(dirs.path + dirs.imageDirectory + typeSwitcher(type) + animSwitcher(self.animType), name)
-        imageCount = 0
-        first = True
-        baseImage = []
-        #Count all of the images and create a base image to gather array sizes
-        for fileName in desiredFiles:
-            if(fileName[-(len(dirs.imageExt)):] == dirs.imageExt):
-                imageCount += 1
-                if first:
-                    baseImage = self.readImage(fileName, type)
-                    first = False
-
-        #print(baseImage.shape)
-        dims = list(baseImage.shape)
-        dims.insert(0,imageCount)
-        #print (dims)
-        #imageArray = np.zeros(dims, dtype=np.int)
-        imageArray = []
-        #print(imageArray)
-        classArray = []
-        nameList = []
-        #Use this to change the maximum number of images that can be feed into the 'net,
-        # no matter how many images exist in the folder of the same name type
-        processed = 0
-
+    def get_dataset(self, type, name="", file_limit=None):
         print("Loading image files...")
-        for index, fileName in enumerate(desiredFiles):
-            #print(fileName[-4:])
-            if(fileName[-4:] == dirs.imageExt and processed < fileLimit):
-                #print(np.array(readImage(fileName)))
-                #print(dir(readImage(fileName)))
-                imageArray.append(self.readImage(fileName, type).flatten())
-                classArray.append(self.getClass(fileName[:-4]))
-                nameList.append(fileName)
-                processed += 1
-                #print(classArray[index - 1])
-                #imageArray = np.append(imageArray,readImage(fileName), axis = 1)
-                #displayImage(readImage(fileName))
+        if file_limit == None:
+            file_limit = sys.maxsize
+        desired_files, names = self.getDesiredFiles(dirs.path + dirs.imageDirectory + typeSwitcher(type) + animSwitcher(self.animType), name)
+        # Limit the number of classes and images to the filelimit
+        file_list, name_list = desired_files[:file_limit], names[:file_limit]
+        image_array = []
+        class_array = []
+        for path_file, image_name in zip(file_list, name_list):
+            image_array.append(self.readImage(path_file).flatten())
+            class_array.append(self.getClass(image_name))
+        print("COMPLETED: Loading image files")
+        return image_array, class_array
 
-        print("COMPLETED: Loading image files ({})".format(processed))
-        #print(imageArray)
-        return imageArray, classArray, nameList
+
+
+        # imageCount = 0
+        # first = True
+        # baseImage = []
+        # #Count all of the images and create a base image to gather array sizes
+        # for fileName in desiredFiles:
+        #     if(fileName[-(len(dirs.imageExt)):] == dirs.imageExt):
+        #         imageCount += 1
+        #         if first:
+        #             baseImage = self.readImage(fileName, type)
+        #             first = False
+        #
+        # #print(baseImage.shape)
+        # #imageArray = np.zeros(dims, dtype=np.int)
+        # imageArray = []
+        # #print(imageArray)
+        # classArray = []
+        # nameList = []
+        # #Use this to change the maximum number of images that can be feed into the 'net,
+        # # no matter how many images exist in the folder of the same name type
+        # processed = 0
+        #
+        # print("Loading image files...")
+        # for index, fileName in enumerate(desiredFiles):
+        #     #print(fileName[-4:])
+        #     if(fileName[-4:] == dirs.imageExt and processed < fileLimit):
+        #         #print(np.array(readImage(fileName)))
+        #         #print(dir(readImage(fileName)))
+        #         imageArray.append(self.readImage(fileName, type).flatten())
+        #         classArray.append(self.getClass(fileName[:-4]))
+        #         nameList.append(fileName)
+        #         processed += 1
+        #         #print(classArray[index - 1])
+        #         #imageArray = np.append(imageArray,readImage(fileName), axis = 1)
+        #         #displayImage(readImage(fileName))
+        #
+        # print("COMPLETED: Loading image files ({})".format(processed))
+        # #print(imageArray)
+        # return imageArray, classArray, nameList
 
 #imageArray, classArray, nameList = getAllImages(0)
 

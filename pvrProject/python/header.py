@@ -25,6 +25,7 @@ class dirs:
     savedDataExt = ".pkl"
     index = "../index.txt"
     pickle = "../data.pkl"
+    settings = "../settings.ini"
     path = os.getcwd() + "/"
 
 def typeSwitcher(x):

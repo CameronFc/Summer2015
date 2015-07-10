@@ -6,4 +6,4 @@ sphere {{ {position}, {size}
     }}
     pigment {{ color red {color[0]} green {color[1]} blue {color[2]} }}
     rotate {rotString}
-}}\n
+}}

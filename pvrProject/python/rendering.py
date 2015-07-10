@@ -10,7 +10,7 @@ from subprocess import check_output
 from subprocess import STDOUT
 import format
 
-#TODO: Mae this actually verobose instead of just errors
+#TODO: Make this actually verobose instead of just errors
 verboseRender = True
 
 class Renderer:
@@ -40,8 +40,11 @@ class Renderer:
         for fileName in files:
                 if(fileName[-(len(dirs.sceneExt)):] == dirs.sceneExt):
                     sceneName = fileName[:-4]
-                    callArray = ["povray", "./" + dirs.sceneDirectory + typeSwitcher(type) + fileName,
-                                 "+O" + dirs.path + dirs.imageDirectory + typeSwitcher(type) + sceneName] + (self.callArrayOptions)
+                    callArray = ["povray",
+                                 dirs.path + dirs.settings,
+                                 "./" + dirs.sceneDirectory + typeSwitcher(type) + fileName,
+                                 "+O" + dirs.path + dirs.imageDirectory + typeSwitcher(type) + sceneName
+                                 ] + (self.callArrayOptions)
                     returncode = call(callArray, stdout=open(os.devnull, "w"),  stderr=STDOUT)
                     if returncode != 0 and verboseRender:
                         print("Fatal Error during rendering: " + str(returncode)
@@ -75,13 +78,12 @@ class Renderer:
     def appendImages(self, name, type="PTRAIN"):
         formatter = format.Formatter()
         path = dirs.imageDirectory + typeSwitcher(type)
-        files = formatter.getDesiredFiles("./" + path, name)
-        commandFiles = list((path + file)for file in files)
+        files, fileNames = formatter.getDesiredFiles("./" + path, name)
         #print(commandFiles)
-        print("Num files appended: {}".format(len(commandFiles)))
+        print("Num files appended: {}".format(len(files)))
         #put the concatenated images into the anim directory
         commandArray = ["convert", "+append", path + animSwitcher(self.animType) + name + dirs.imageExt]
-        commandArray[1:1] = commandFiles
+        commandArray[1:1] = files
         #print(commandArray)
         returnCode = call(commandArray)
         if returnCode != 0:

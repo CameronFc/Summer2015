@@ -9,4 +9,4 @@ box {{ <0.0, 0.0, 0.0>, {endPoint}
     translate {halfPosition}
     rotate {rotString}
     rotate <-20, 30, 0>
-}}\n
+}}
