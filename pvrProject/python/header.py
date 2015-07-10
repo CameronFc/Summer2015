@@ -22,7 +22,7 @@ class dirs:
     templateDirectory = "../templates/"
     templateExt = ".txt"
     savedDataDirectory = "../netParams/"
-    savedDataExt = ".txt"
+    savedDataExt = ".pkl"
     index = "../index.txt"
     pickle = "../data.pkl"
     path = os.getcwd() + "/"

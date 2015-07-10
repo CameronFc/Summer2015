@@ -4,21 +4,21 @@ import theano.tensor as T
 import math
 import sys
 import pickle
+import time
 from time import strftime
 from header import dirs
 rng = np.random
 
 #Logistic-linear net to estimate the position of lights
-#TODO: change to lights not cube sphere
 #TODO: create feature to store the weights of a learned mlp for storage and later use
 
 #theano.config.compute_test_value = 'warn'
 
 class HiddenLayer:
-    def __init__(s, input, dims, activation=None):
+    def __init__(s, input, dims, activation=None, layer=1):
         wBase = rng.randn(*dims)
-        s.w = theano.shared(wBase, name='w')
-        s.b = theano.shared(0. , name='b')
+        s.w = theano.shared(wBase, name='w' + str(layer))
+        s.b = theano.shared(0. , name='b' + str(layer))
         linOutput = T.dot(input, s.w) + s.b
         s.output = (
             linOutput if activation is None
@@ -27,11 +27,14 @@ class HiddenLayer:
         s.params = [s.w,s.b]
 
 class LLnet:
-    def __init__(s, imageArray, classArray, nameList, steps = 10):
+    def __init__(s, imageArray, classArray, nameList, **kwargs):
         L1reg = 0.0001
-        s.learningRate = 0.001
-        s.f2 = 10
+        s.learningRate = kwargs.get('learningRate', 0.001)
+        s.f2 = kwargs.get('f2', 10)
+        s.steps = kwargs.get('steps', 10)
         s.outDim = 3
+        s.nameList = nameList
+        print("Initializing LLNet...")
 
         #Check to see if the images are all of the smae size, abort otherwise
         baseImageLength = len(imageArray[0])
@@ -40,11 +43,10 @@ class LLnet:
                 print("FATAL ERROR: Image [{}] of size ({}) is not the same size of the base image ({})".format(index,len(element),baseImageLength))
                 sys.exit(0)
 
-        s.steps = steps
         s.N = len(imageArray)
         #print(imageArray)
         #number of neuron stacks in logistic layer
-        s.nameList = nameList
+
         #print("length of image array ", len(imageArray))
         s.feats = len(imageArray[0])
         #print("length of image 1 ", len(imageArray[0]))
@@ -59,8 +61,8 @@ class LLnet:
         s.x = T.matrix("x")
         s.y = T.matrix("y")
 
-        hl = HiddenLayer(s.x, [s.feats, s.f2], T.tanh)
-        ll = HiddenLayer(hl.output, [s.f2, s.outDim])
+        hl = HiddenLayer(s.x, [s.feats, s.f2], T.tanh, layer=1)
+        ll = HiddenLayer(hl.output, [s.f2, s.outDim], layer=2)
         s.params = hl.params + ll.params
 
         #How many weights in the logistic layer? there should be a total of n * 3 neurons here, each with s.feats parameters
@@ -103,9 +105,13 @@ class LLnet:
         )
         #s.predict = theano.function(inputs=[s.x], outputs=s.prediction)
 
+        print("COMPLETED: Intializing LLNet")
+
     def beginTraining(s):
         #print(len(s.D[1]), len(s.D[1][0]))
         #theano.printing.debugprint(s.cost)
+        print("Beginning Training...")
+        startTime = time.time()
         oldCost = 0.0
         for i in range(s.steps):
             currentCost = s.train(s.D[0], s.D[1])[0]
@@ -113,6 +119,7 @@ class LLnet:
             if i + 1 == 1 or i + 1 == s.steps or (i + 1) % math.ceil(math.sqrt(s.steps)) == 0:
                 print("Trained {}/{} steps, cost : {} improvement: +{:%}".format(str(i + 1),str(s.steps),currentCost, (oldCost - currentCost)/currentCost))
                 oldCost = currentCost
+        print("Completed Training in {} seconds".format(str(time.time() - startTime)))
         #print ("target values for D:", s.D[1])
         #print ("prediction on D:", s.predict(s.D[0]))
         #print ("Differences in target values and prediction:", s.D[1] - s.predict(s.D[0]))
@@ -127,7 +134,37 @@ class LLnet:
     def saveParams(s):
         name = strftime("%Y-%m-%d_%H-%M-%S")
         with open(dirs.path + dirs.savedDataDirectory + name + dirs.savedDataExt, 'a+b') as out:
-                pickle.dump(s.params, out)
+            params = {}
+            for p in s.params:
+                params[str(p)] = p.get_value()
+            data = {'timeStamp' : name, 'params' : params}
+            pickle.dump(data, out)
+        print("COMPLETED: Saved parameters to {}".format(name + dirs.savedDataExt))
+        return name
+
+    def loadParams(s, name):
+        lst = []
+        with open(dirs.path + dirs.savedDataDirectory + name + dirs.savedDataExt, 'rb') as file:
+            while 1:
+                try:
+                    lst.append(pickle.load(file))
+                except EOFError:
+                    break
+        #print(lst)
+        loadedParams = lst[0].get('params')
+        #For each parameter in the LLNet
+        for param in s.params:
+            sParam = str(param)
+            #print(loadedParams.get(sParam))
+            loadedValue = loadedParams.get(sParam)
+            #print(type(loadedValue))
+            if not loadedValue.size:
+                print("FATAL ERROR: Could not locate value of {}".format(sParam))
+                sys.exit(0)
+            else:
+                param.set_value(loadedValue)
+        print("COMPLETED: Loading parameters from {}".format(name))
+
 
 # Train
 #for i in range(training_steps):

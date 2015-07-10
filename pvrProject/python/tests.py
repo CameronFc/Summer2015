@@ -58,11 +58,18 @@ class tests:
 
     @staticmethod
     def llnetAll():
-        fileLimit = 10
+        fileLimit = 5
         formatter = format.Formatter(animType="PANIM")
-        estimator = LLnet(*formatter.getAllImages("PTRAIN", "TestAnimation", fileLimit))
+        LLNetOptions = {
+            'learningRate' : 0.001,
+            'steps' : 5,
+            'f2' : 2
+        }
+        estimator = LLnet(*formatter.getAllImages("PTRAIN", "TestAnimation", fileLimit), **LLNetOptions)
         estimator.beginTraining()
-        estimator.saveParams()
+        name = estimator.saveParams()
+        estimator.loadParams(name)
+        estimator.beginTraining()
         #imageArray, classArray, names = f.getAllImages(0,"light0")
         #estimator.classify(imageArray)
         #print(classArray[0])
