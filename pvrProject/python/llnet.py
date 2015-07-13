@@ -11,8 +11,7 @@ from format import Formatter
 rng = np.random
 
 #Logistic-linear net to estimate the position of lights
-#TODO: create feature to store the weights of a learned mlp for storage and later use
-#TODO: Add batching function to this
+#TODO: Add batching function
 
 #theano.config.compute_test_value = 'warn'
 
@@ -107,19 +106,21 @@ class MetaNet:
         self.train_set_x, self.train_set_y = formatter.get_dataset(type="PTRAIN", name="TestAnimation", file_limit=file_limit)
         for index, dict in enumerate(self.train_set_y):
             #TODO: Change this when we alter scene again
-            self.train_set_y[index] = dict.get("objects")[0].get("light").get("position")
+            self.train_set_y[index] = [dict.get("objects")[0].get("light").get("position"),
+                                       dict.get("objects")[1].get("rect").get("color")]
         input_dim = len(self.train_set_x[0])
         # Init net
         self.net = LLNet()
         # Add layers
         self.net.add_layer(self.net.x, [input_dim, 10], T.tanh)
         self.net.add_layer(self.net.layers[0].output, [10, 3])
+        self.net.add_layer(self.net.layers[0].output, [10, 3])
         # Update parameters to produce regularization weight
         self.net.update_params()
         # Add custom cost function
-        position_cost = ((self.net.layers[-1].output - self.net.y)**2).sum()
-        color_cost = 0
-        self.net.cost = position_cost + self.net.regularization
+        position_cost = ((self.net.layers[1].output - self.net.y[0])**2).sum()
+        color_cost = ((self.net.layers[2].output - self.net.y[1])**2).sum()
+        self.net.cost = position_cost + color_cost * 10 + self.net.regularization
         # Compile internal theano functions
         self.net.update_graphs()
 
@@ -132,7 +133,7 @@ class MetaNet:
         for i in range(sys.maxsize):
             totalCost = 0
             for j in range(len(self.train_set_x)):
-                totalCost += self.net.train([self.train_set_x[j]], [self.train_set_y[j]])
+                totalCost += self.net.train([self.train_set_x[j]], self.train_set_y[j])
             #if i + 1 == 1 or i + 1 == steps or (i + 1) % math.ceil(math.sqrt(steps)) == 0:
 
             improvement = (oldCost - totalCost)/totalCost
