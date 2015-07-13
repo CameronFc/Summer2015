@@ -145,3 +145,14 @@ class MetaNet:
             print("Trained {} steps, cost : {} improvement: +{:%}, learningRate: {}".format(str(i + 1),totalCost, improvement, self.net.learningRate.get_value()))
             oldCost = totalCost
         print("Completed Training in {} seconds".format(str(time.time() - startTime)))
+        #DEBUG
+        self.classify([self.train_set_x[4]])
+        print(self.train_set_y[4][1])
+
+    def classify(self, image):
+        get_class = theano.function(
+            inputs=[self.net.x],
+            outputs=self.net.layers[2].output
+        )
+        print(get_class(image))
+
