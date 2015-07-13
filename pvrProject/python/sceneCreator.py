@@ -36,13 +36,28 @@ def createBasicAnimation(sceneName, type="PTRAIN"):
     objC = oc.ObjectCreator()
     rot = list(rng.randint(0,360, 3))
     objC.addRectPrism([0.0,0.0,0.0], [1.5,1.5,1.5], [1,0,0], rot)
-    #possible bug fix? Should not be affecting anything
-    xyz = np.zeros(3)
-    for index, element in enumerate(xyz):
-        xyz[index] = rng.randn(1) * 10
-    #xyz=getxyz(10)
+    xyz=getxyz(10)
     objC.addPointLight(xyz, [1,1,1])
     dict = {"objects" : {"light": {"position" : xyz}}, "name" : sceneName}
+    sceneFromObjCreator(sceneName, objC, dict, type)
+
+def secondAnimation(sceneName, type="PTRAIN"):
+    objC = oc.ObjectCreator()
+    rot = list(rng.randint(0,360, 3))
+    color = getRandColor()
+    objC.addRectPrism([0.0,0.0,0.0], [1.5,1.5,1.5], color, rot)
+    xyz=getxyz(10)
+    objC.addPointLight(xyz, [1,1,1])
+    dict = {"objects" :
+                [
+                    {"light":
+                         {"position" : xyz}
+                    },
+                    {"rect":
+                         {"color": color}
+                    }
+                ],
+           "name" : sceneName}
     sceneFromObjCreator(sceneName, objC, dict, type)
 
 ##################################################################################################
@@ -52,6 +67,18 @@ def getxyz(scale):
     for index, element in enumerate(xyz):
         xyz[index] = rng.randn(1) * scale
     return xyz
+
+def getRandColor():
+    color = np.zeros(3)
+    for index, element in enumerate(color):
+        color[index] = rng.randint(0,2)
+    # Make a random color if we set as black or white
+    if(np.all(color==color[0])):
+        index = rng.randint(0,3)
+        not_index = (index + 1) % 3
+        color[index] = 1
+        color[not_index] = 0
+    return color
 
 def cubeScene(sceneName, type="PTRAIN"):
     objC = oc.ObjectCreator()
