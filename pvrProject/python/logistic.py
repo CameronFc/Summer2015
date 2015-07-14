@@ -5,6 +5,8 @@ import math
 import header
 rng = np.random
 
+# OLD
+
 class Logistic:
     def __init__(s, imageArray, classArray, nameList, steps = 100):
         s.steps = steps

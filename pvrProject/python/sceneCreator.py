@@ -70,7 +70,7 @@ def getxyz(scale):
     return xyz
 
 def get_color_class(color):
-    return 4 * color[0] + 2 *color[1] + color[2]
+    return int(4 * color[0] + 2 *color[1] + color[2])
 
 def getRandColor():
     color = np.zeros(3)

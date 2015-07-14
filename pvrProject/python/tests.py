@@ -63,13 +63,13 @@ class tests:
 
     @staticmethod
     def CARAS():
-        type = "PTRAIN"
+        type = "PTESTS"
         if(typeSwitcher(type) == ""):
             print("ERROR: Invalid type: {}".format(type))
             sys.exit(0)
         sc.clearPickleIndex(type)
         frames = 20
-        numAnims = 50
+        numAnims = 20
         for i in range(numAnims):
             #need a delimiter to separate scene# from frame#
             delim = "D"

@@ -22,7 +22,7 @@ class HiddenLayer:
         wBase = rng.randn(*dims)
         self.w = theano.shared(wBase, name='w')
         self.b = theano.shared(0. , name='b')
-        linOutput = T.dot(input, self.w) + self.b
+        linOutput = T.dot(self.w, input) + self.b
         self.output = (
             linOutput if activation is None
             else activation(linOutput)
