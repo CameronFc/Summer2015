@@ -54,7 +54,8 @@ def secondAnimation(sceneName, type="PTRAIN"):
                          {"position" : xyz}
                     },
                     {"rect":
-                         {"color": color}
+                         {"color": color,
+                          "color_class": get_color_class(color)}
                     }
                 ],
            "name" : sceneName}
@@ -67,6 +68,9 @@ def getxyz(scale):
     for index, element in enumerate(xyz):
         xyz[index] = rng.randn(1) * scale
     return xyz
+
+def get_color_class(color):
+    return 4 * color[0] + 2 *color[1] + color[2]
 
 def getRandColor():
     color = np.zeros(3)

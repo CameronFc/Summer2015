@@ -7,19 +7,21 @@ import pickle
 import time
 from time import strftime
 from header import dirs
-from format import Formatter
 rng = np.random
 
-#Logistic-linear net to estimate the position of lights
+# Logistic-linear net to estimate the position of lights
+# Note that this file should be completely unmodified during tests, and should
+# house no information related to a particular test.
+
 #TODO: Add batching function
 
 #theano.config.compute_test_value = 'warn'
 
 class HiddenLayer:
-    def __init__(self, input, dims, activation=None, layer=1):
+    def __init__(self, input, dims, activation=None):
         wBase = rng.randn(*dims)
-        self.w = theano.shared(wBase, name='w' + str(layer))
-        self.b = theano.shared(0. , name='b' + str(layer))
+        self.w = theano.shared(wBase, name='w')
+        self.b = theano.shared(0. , name='b')
         linOutput = T.dot(input, self.w) + self.b
         self.output = (
             linOutput if activation is None
@@ -64,6 +66,7 @@ class LLNet:
         self.layers += [HiddenLayer(input, dims, activator)]
 
     def saveParams(self):
+        # Get current date-time string
         name = strftime("%Y-%m-%d_%H-%M-%S")
         with open(dirs.path + dirs.savedDataDirectory + name + dirs.savedDataExt, 'a+b') as out:
             params = {}
@@ -82,14 +85,10 @@ class LLNet:
                     lst.append(pickle.load(file))
                 except EOFError:
                     break
-        #print(lst)
         loadedParams = lst[0].get('params')
-        #For each parameter in the LLNet
         for param in self.params:
             sParam = str(param)
-            #print(loadedParams.get(sParam))
             loadedValue = loadedParams.get(sParam)
-            #print(type(loadedValue))
             if not loadedValue.size:
                 print("FATAL ERROR: Could not locate value of {}".format(sParam))
                 sys.exit(0)

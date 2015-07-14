@@ -9,8 +9,9 @@ import theano.tensor as T
 # Device to contain the training data and all the super-parameters of the net
 class MetaNet:
     def __init__(self):
-        self.train_file_limit = 10
+        self.train_file_limit = 50
         self.test_file_limit = 10
+        self.num_classes = 8
         self.file_names = "TestAnimation"
         self.anim_type = "PANIM"
         input_dim = self.get_input_dim()
@@ -51,7 +52,6 @@ class MetaNet:
         return len(set_x[0])
 
     def train(self, min_improvement=0.001):
-        print("Beginning Training...")
         # Get the formatted training set
         dataset_options = {
             'name': self.file_names,
@@ -60,6 +60,7 @@ class MetaNet:
             'file_limit': self.train_file_limit
         }
         train_set_x , train_set_y = self.get_formatted_dataset(**dataset_options)
+        print("Beginning Training...")
         startTime = time.time()
         #TODO: CHANGE ME
         oldCost = 10000
@@ -80,7 +81,7 @@ class MetaNet:
             oldCost = totalCost
         print("Completed Training in {} seconds".format(str(time.time() - startTime)))
         #DEBUG
-        self.classify([train_set_x[4]])
+        self.test()
 
     def test(self):
         dataset_options = {
@@ -90,11 +91,15 @@ class MetaNet:
             'file_limit' : self.test_file_limit
         }
         test_x, test_y = self.get_formatted_dataset(**dataset_options)
+        for index, element_x in enumerate(test_x):
+            self.classify(test_x[index], test_y[index])
 
-    def classify(self, image):
+    def classify(self, image_x, image_y):
         get_class = theano.function(
             inputs=[self.net.x],
+            #TODO: WARN: Based on formatting structure
             outputs=self.net.layers[2].output
         )
-        print(get_class(image))
+        #TODO: WARN: Based on formatting structure
+        print(get_class([image_x]), [image_y[1]])
 
