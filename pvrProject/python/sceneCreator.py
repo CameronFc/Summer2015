@@ -102,19 +102,19 @@ def sphereScene(sceneName, type="PTRAIN"):
 def sceneFromObjCreator(sceneName, objC, dict, type):
     with open("./" + dirs.sceneDirectory + typeSwitcher(type) + sceneName + dirs.sceneExt, "w") as out:
         #Save the data
-        pickleToIndex(dict)
+        pickleToIndex(dict, type)
         #What actually creates the scene file
         out.write(objC.scene)
 
 ##################################################################################################
 #INDEXING
 
-def pickleToIndex(dict):
-    with open(dirs.path + dirs.pickle, mode="a+b") as out:
+def pickleToIndex(dict, type):
+    with open(dirs.path + dirs.indices + typeSwitcher(type) + dirs.pickle, mode="a+b") as out:
         pickle.dump(dict, out)
 
-def unPickleIndex():
-    with open(dirs.path + dirs.pickle, "rb") as file:
+def unPickleIndex(type):
+    with open(dirs.path + dirs.indices + typeSwitcher(type) + dirs.pickle, "rb") as file:
         file.seek(0)
         lst = []
         while 1:
@@ -125,9 +125,9 @@ def unPickleIndex():
         #st.append(pickle.load(file))
         return lst
 
-def clearPickleIndex():
-    open(dirs.path + dirs.pickle, "w").close()
-    print("Cleared Pickle Index")
+def clearPickleIndex(type):
+    open(dirs.path + dirs.indices + typeSwitcher(type) +  dirs.pickle, "w").close()
+    print("Cleared {} Index".format(typeSwitcher(type) + dirs.pickle))
 
 #Old text based:
 def clearIndex():

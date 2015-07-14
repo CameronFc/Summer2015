@@ -11,6 +11,7 @@ from subprocess import STDOUT
 import format
 
 #TODO: Make this actually verobose instead of just errors
+#TODO: Fix this renderer init garbage!
 verboseRender = True
 
 class Renderer:
@@ -78,13 +79,12 @@ class Renderer:
     def appendImages(self, name, type="PTRAIN"):
         formatter = format.Formatter()
         path = dirs.imageDirectory + typeSwitcher(type)
+        # Only appends files with name as prefix
         files, fileNames = formatter.getDesiredFiles("./" + path, name)
-        #print(commandFiles)
         print("Num files appended: {}".format(len(files)))
-        #put the concatenated images into the anim directory
+        # Put the concatenated images into the anim directory
         commandArray = ["convert", "+append", path + animSwitcher(self.animType) + name + dirs.imageExt]
         commandArray[1:1] = files
-        #print(commandArray)
         returnCode = call(commandArray)
         if returnCode != 0:
             print("Fatal error during image concatenation!")

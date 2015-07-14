@@ -3,7 +3,7 @@ from header import typeSwitcher
 import header
 import rendering as r
 from logistic import Logistic
-from llnet import MetaNet
+import MetaNet as mn
 import sceneCreator as sc
 import format
 import alteration as alt
@@ -58,7 +58,7 @@ class tests:
 
     @staticmethod
     def llnetAll():
-        Meta = MetaNet()
+        Meta = mn.MetaNet()
         Meta.train()
 
     @staticmethod
@@ -77,19 +77,20 @@ class tests:
 
     @staticmethod
     def CARAS():
-        sc.clearPickleIndex()
+        type = "PTESTS"
+        sc.clearPickleIndex(type)
         frames = 20
-        numAnims = 100
+        numAnims = 10
         for i in range(numAnims):
             #need a delimiter to separate scene# from frame#
             delim = "D"
             name = "TestAnimation" + str(i) + delim
             #bugfix
-            sc.secondAnimation(name, "PTRAIN")
+            sc.secondAnimation(name, type)
             # sc.createBasicAnimation(name, 0)
             renderer = r.Renderer(frames=frames)
-            renderer.renderByName(name, "PTRAIN")
-            renderer.appendImages(name, "PTRAIN")
+            renderer.renderByName(name, type)
+            renderer.appendImages(name, type)
         print("Completed Anim rendering")
 
 #TODO: Make sure changes, now with templating, works (objC)
@@ -99,10 +100,10 @@ class tests:
 #tests.createScenes()
 #tests.createLightScenes()
 #tests.createAnimScenes()
-#tests.CARAS()
+tests.CARAS()
 #tests.renderLights()
 #tests.render()
 #tests.CARATS()
 #tests.convertAllToGreyScale()
 #tests.logisticAll()
-tests.llnetAll()
+#tests.llnetAll()
