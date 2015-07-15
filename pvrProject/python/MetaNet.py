@@ -13,7 +13,7 @@ import theano.tensor as T
 
 # Device to maximize interaction between LLNet and input data to absolutely maximize reusability
 class MetaNet:
-    def __init__(self, y_formatter, **options):
+    def __init__(self, y_formatter, test_function, **options):
         self.train_file_limit = options.get('train_file_limit',50)
         self.test_file_limit = options.get('test_file_limit', 10)
         self.min_improvement = options.get('min_improvement', 0.01)
@@ -21,11 +21,13 @@ class MetaNet:
         self.file_names = options.get('file_names')
         self.anim_type = options.get('anim_type')
         self.y_formatter = y_formatter
+        self.test_function = test_function
         self.input_dim = self.get_input_dim()
+        self.test_output_layers = []
         # Init net
         self.net = LLNet()
 
-    def add_layer(self, input, dims, activator=None):
+    def add_layer(self, input,dims, activator=None):
         self.net.add_layer(input, dims, activator)
         self.net.update_params()
 
@@ -101,11 +103,10 @@ class MetaNet:
             self.classify(test_x[index], test_y[index])
 
     def classify(self, image_x, image_y):
-        get_class = theano.function(
+        get_test_output = theano.function(
             inputs=[self.net.x],
-            #TODO: WARN: Based on formatting structure
-            outputs=self.net.layers[2].output
+            outputs=[(self.get_layer(element).output) for element in self.test_output_layers]
         )
-        #TODO: WARN: Based on formatting structure
-        print(get_class(np.array([image_x]).transpose()).argmax(), [image_y[1]])
+        # Why np.array([]).transpose() ? need to go 'dim' -> [1,dim] -> [dim,1] as in above
+        self.test_function(get_test_output(np.array([image_x]).transpose()), image_y)
 

@@ -71,7 +71,7 @@ class tests:
             sys.exit(0)
         sc.clearPickleIndex(type)
         frames = 20
-        numAnims = 20
+        numAnims = 10
         for i in range(numAnims):
             #need a delimiter to separate scene# from frame#
             delim = "D"
@@ -92,7 +92,7 @@ class tests:
 #tests.createScenes()
 #tests.createLightScenes()
 #tests.createAnimScenes()
-#tests.CARAS()
+tests.CARAS()
 #tests.renderLights()
 #tests.render()
 #tests.CARATS()
