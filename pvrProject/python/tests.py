@@ -3,12 +3,13 @@ from header import typeSwitcher
 import header
 import rendering as r
 from logistic import Logistic
-import MetaNet as mn
 import sceneCreator as sc
 import format
 import alteration as alt
 import os
 import sys
+
+#TODO: Clean up defunct tests
 
 class tests:
     @staticmethod
@@ -46,6 +47,7 @@ class tests:
     def llnetAll():
         Meta = mn.MetaNet()
         Meta.train()
+        Meta.test()
 
     @staticmethod
     #Create and render all test spheres
@@ -82,7 +84,6 @@ class tests:
             renderer.appendImages(name, type)
         print("Completed Anim rendering")
 
-#TODO: Make sure changes, now with templating, works (objC)
 #TODO: Clean up code so things are readable, in correct pythonic format in free time
 #TODO: Change to completely uncompressed targa format, disallow unlike images
 #TODO: Changing number of frames requires the deletion of all images in the root type directory! (bad)
@@ -96,4 +97,4 @@ class tests:
 #tests.render()
 #tests.CARATS()
 #tests.convertAllToGreyScale()
-tests.llnetAll()
+#tests.llnetAll()
