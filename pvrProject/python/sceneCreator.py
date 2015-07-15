@@ -5,24 +5,7 @@ import objectCreator as oc
 import numpy as np
 import pickle
 
-
-def createScene(sceneName, templateName, type="PTRAIN"):
-    #TODO replace line below
-    numLights = 3
-    x = np.zeros(3)
-    y = np.zeros(3)
-    z = np.zeros(3)
-    for i in range(numLights):
-        x[i],y[i],z[i] = rng.randint(-10,10),rng.randint(-10,10),rng.randint(-10,10)
-
-    with open(dirs.path + dirs.templateDirectory + templateName + dirs.sceneExt, "r") as template:
-        with open("./" + dirs.sceneDirectory + typeSwitcher(type) + sceneName + dirs.sceneExt, "w") as out:
-            for line in template:
-                out.write(line)
-            for i in range(numLights):
-                out.write("light_source { <" + str(x[i]) +","+ str(y[i]) +","+ str(z[i]) +"> color red 1 green 1 blue 1 } \n")
-
-def ltlDebugScene(sceneName, type="PTRAIN"):
+def ltlDebugScene(sceneName, type, index_name):
     objC = oc.ObjectCreator()
     objC.addSphere([0.0,0.0,0.0], 2, [1,0,0])
     xyz = np.zeros(3)
@@ -30,18 +13,18 @@ def ltlDebugScene(sceneName, type="PTRAIN"):
         xyz[index] = rng.randn(1) * 10
     objC.addPointLight(xyz, [1,1,1])
     dict = {"objects" : {"light": {"position" : xyz}}, "name" : sceneName}
-    sceneFromObjCreator(sceneName, objC, dict, type)
+    sceneFromObjCreator(sceneName, objC, dict, type, index_name)
 
-def createBasicAnimation(sceneName, type="PTRAIN"):
+def createBasicAnimation(sceneName, type, index_name):
     objC = oc.ObjectCreator()
     rot = list(rng.randint(0,360, 3))
     objC.addRectPrism([0.0,0.0,0.0], [1.5,1.5,1.5], [1,0,0], rot)
     xyz=getxyz(10)
     objC.addPointLight(xyz, [1,1,1])
     dict = {"objects" : {"light": {"position" : xyz}}, "name" : sceneName}
-    sceneFromObjCreator(sceneName, objC, dict, type)
+    sceneFromObjCreator(sceneName, objC, dict, type, index_name)
 
-def secondAnimation(sceneName, type="PTRAIN"):
+def secondAnimation(sceneName, type, index_name):
     objC = oc.ObjectCreator()
     rot = list(rng.randint(0,360, 3))
     color = getRandColor()
@@ -59,10 +42,33 @@ def secondAnimation(sceneName, type="PTRAIN"):
                     }
                 ],
            "name" : sceneName}
-    sceneFromObjCreator(sceneName, objC, dict, type)
+    sceneFromObjCreator(sceneName, objC, dict, type, index_name)
+
+def third_animation(scene_name, type, index_name):
+    objC = oc.ObjectCreator()
+    rot = list(rng.randint(0,360, 3))
+    color = getRandColor()
+    size = rng.random_sample(1)[0] * 1.5 + 1
+    objC.addRectPrism([0.0,0.0,0.0], [size,size,size], color, rot)
+    xyz=getxyz(10)
+    objC.addPointLight(xyz, [1,1,1])
+    dict = {"objects" :
+                [
+                    {"light":
+                         {"position" : xyz}
+                    },
+                    {"rect":
+                         {"color": color,
+                          "color_class": get_color_class(color),
+                          "size": size}
+                    }
+                ],
+           "name" : scene_name}
+    sceneFromObjCreator(scene_name, objC, dict, type, index_name)
 
 ##################################################################################################
-##Holdovers
+## Helpers
+
 def getxyz(scale):
     xyz = np.zeros(3)
     for index, element in enumerate(xyz):
@@ -71,6 +77,16 @@ def getxyz(scale):
 
 def get_color_class(color):
     return int(4 * color[0] + 2 *color[1] + color[2])
+
+def sceneFromObjCreator(sceneName, objC, dict, type, index_name):
+    with open("./" + dirs.sceneDirectory + typeSwitcher(type) + sceneName + dirs.sceneExt, "w") as out:
+        #Save the data
+        pickleToIndex(dict, type, index_name)
+        #What actually creates the scene file
+        out.write(objC.scene)
+
+##################################################################################################
+## Holdovers
 
 def getRandColor():
     color = np.zeros(3)
@@ -84,41 +100,33 @@ def getRandColor():
         color[not_index] = 0
     return color
 
-def cubeScene(sceneName, type="PTRAIN"):
+def cubeScene(sceneName, type, index_name):
     objC = oc.ObjectCreator()
     objC.addRectPrism([0.0,0.0,0.0], [1.5,1.5,1.5], [1,0,0])
     for i in range(3):
         xyz = getxyz(10)
         objC.addPointLight(xyz, [1,1,1])
     dict = {"class" : 1, "name" : sceneName}
-    sceneFromObjCreator(sceneName, objC, dict, type)
+    sceneFromObjCreator(sceneName, objC, dict, type, index_name)
 
-def sphereScene(sceneName, type="PTRAIN"):
+def sphereScene(sceneName, type, index_name):
     objC = oc.ObjectCreator()
     objC.addSphere([0.0,0.0,0.0], 2, [1,0,0])
     for i in range(3):
         xyz = getxyz(10)
         objC.addPointLight(xyz, [1,1,1])
     dict = {"class" : 0, "name" : sceneName}
-    sceneFromObjCreator(sceneName, objC, dict, type)
-##################################################################################################
-
-def sceneFromObjCreator(sceneName, objC, dict, type):
-    with open("./" + dirs.sceneDirectory + typeSwitcher(type) + sceneName + dirs.sceneExt, "w") as out:
-        #Save the data
-        pickleToIndex(dict, type)
-        #What actually creates the scene file
-        out.write(objC.scene)
+    sceneFromObjCreator(sceneName, objC, dict, type, index_name)
 
 ##################################################################################################
-#INDEXING
+## INDEXING
 
-def pickleToIndex(dict, type):
-    with open(dirs.path + dirs.indices + typeSwitcher(type) + dirs.pickle, mode="a+b") as out:
+def pickleToIndex(dict, type, index_name):
+    with open(dirs.path + dirs.indices + typeSwitcher(type) + index_name + dirs.index_ext, mode="a+b") as out:
         pickle.dump(dict, out)
 
-def unPickleIndex(type):
-    with open(dirs.path + dirs.indices + typeSwitcher(type) + dirs.pickle, "rb") as file:
+def unPickleIndex(type, index_name):
+    with open(dirs.path + dirs.indices + typeSwitcher(type) + index_name + dirs.index_ext, "rb") as file:
         file.seek(0)
         lst = []
         while 1:
@@ -129,11 +137,12 @@ def unPickleIndex(type):
         #st.append(pickle.load(file))
         return lst
 
-def clearPickleIndex(type):
-    open(dirs.path + dirs.indices + typeSwitcher(type) +  dirs.pickle, "w").close()
-    print("Cleared {} Index".format(typeSwitcher(type) + dirs.pickle))
+def clearPickleIndex(type, index_name):
+    open(dirs.path + dirs.indices + typeSwitcher(type) + index_name + dirs.index_ext, "w").close()
+    print("Cleared {} Index".format(typeSwitcher(type) + index_name + dirs.index_ext))
 
-#Old text based:
+##################################################################################################
+## Old text based:
 def clearIndex():
     with open(dirs.path + dirs.index, "w") as out:
         out.write("")
@@ -146,9 +155,3 @@ def writeToIndex(*args, d=','):
         #remove last delimeter
         str = str[:-1]
         out.write(str + "\n")
-
-#clearIndex()
-#writeToIndex("Cube","[1,1,1]")
-
-#ltlDebugScene("aDebug")
-#print(unPickleIndex())

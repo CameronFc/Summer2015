@@ -44,12 +44,6 @@ class tests:
         renderer.renderByName("light",0)
 
     @staticmethod
-    def llnetAll():
-        Meta = mn.MetaNet()
-        Meta.train()
-        Meta.test()
-
-    @staticmethod
     #Create and render all test spheres
     def CARATS():
         for i in range(100):
@@ -69,15 +63,17 @@ class tests:
         if(typeSwitcher(type) == ""):
             print("ERROR: Invalid type: {}".format(type))
             sys.exit(0)
-        sc.clearPickleIndex(type)
         frames = 20
-        numAnims = 10
+        numAnims = 20
+        # Use this to vary the name of the images we want to create
+        index_name = "VaryingSizeCubes"
+        sc.clearPickleIndex(type, index_name)
         for i in range(numAnims):
             #need a delimiter to separate scene# from frame#
             delim = "D"
-            name = "TestAnimation" + str(i) + delim
+            name = index_name + str(i) + delim
             #bugfix
-            sc.secondAnimation(name, type)
+            sc.third_animation(name, type, index_name)
             # sc.createBasicAnimation(name, 0)
             renderer = r.Renderer(frames=frames)
             renderer.renderByName(name, type)
@@ -95,6 +91,5 @@ class tests:
 tests.CARAS()
 #tests.renderLights()
 #tests.render()
-#tests.CARATS()
 #tests.convertAllToGreyScale()
 #tests.llnetAll()

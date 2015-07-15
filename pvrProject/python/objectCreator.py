@@ -13,7 +13,7 @@ from templates import Tstrings as temps
 class ObjectCreator:
     def __init__(self):
         self.scene = temps.getTemplateString("init")
-        #Vector string for fomatting use
+        # Vector string for fomatting use
         self.VString = "<{0},{1},{2}>"
 
     def addSphere(self, xyz, size, color, rot=None):
@@ -21,7 +21,6 @@ class ObjectCreator:
         rotStr = self.getRotStr(rot)
         str = temps.getTemplateString("sphere").format(position=pos, color=color, size=size, rotString=rotStr)
         self.scene += str
-        #print(self.scene)
 
     def addRectPrism(self, xyz, lwh, color, rot=None):
         rotStr = self.getRotStr(rot)
@@ -30,29 +29,34 @@ class ObjectCreator:
         sizes = self.VString.format(*lwh)
         str = temps.getTemplateString("rectPrism").format(position=pos, color=color, endPoint=sizes, halfPosition=nHalfSizes, rotString=rotStr)
         self.scene += str
-        #print(self.scene)
+
+    def addCone(self, xyz, xyz2, color, rot=None):
+        rotStr = self.getRotStr(rot)
+        center_1 = self.VString.format(*xyz)
+        center_2 = self.VString.format(*xyz2)
+        str = temps.getTemplateString("cone").format(center_1=center_1,center_2=center_2,color=color,rotStr=rotStr)
+        self.scene += str
 
     def addPlane(self, xyz, lw, color, rot=None):
         lw.append(0.1)
         self.addRectPrism(xyz,lw,color, rot)
 
-    #points at origin by default, has some other parameters set by default as well
+    # Points at origin by default, has some other parameters set by default as well
     def addPointLight(self, xyz, color):
         pos = self.VString.format(*xyz)
         colors = "color red {0} green {1} blue {2}".format(*color)
         str = "light_source {{ {0} {1} }} \n".format(pos, colors)
         self.scene += str
-        #print(self.scene)
 
+    # Create povray string for rotation with clock param
     def getRotStr(self, rot):
         if rot != None:
-            #Rotation amounts by clock cycle
+            # Rotation amounts by clock cycle
             rotScale = list((str(i) + "*clock")for i in rot)
             rotStr = "<{},{},{}>".format(*rotScale)
             return rotStr
         else:
             return ""
-        #print(")
 
 
 #objC = objectCreator()

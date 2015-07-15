@@ -2,19 +2,22 @@ import os
 
 # Routing to find files quickly based on python variables
 class dirs:
+    dump = "dump/"
     imageDirectory = "../images/"
     imageExt = ".tga"
-    sceneDirectory = "../scenes/"
-    sceneExt = ".pov"
-    templateDirectory = "../templates/"
-    templateExt = ".txt"
-    savedDataDirectory = "../netParams/"
-    savedDataExt = ".pkl"
     index = "../index.txt"
     indices = "../indices/"
-    pickle = "data.pkl"
-    settings = "../settings.ini"
+    index_ext = ".pkl"
     path = os.getcwd() + "/"
+    pickle = "data.pkl"
+    savedDataDirectory = "../netParams/"
+    savedDataExt = ".pkl"
+    sceneDirectory = "../scenes/"
+    sceneExt = ".pov"
+    settings = "../settings.ini"
+    templateDirectory = "../templates/"
+    templateExt = ".txt"
+
 
 def typeSwitcher(x):
     return {

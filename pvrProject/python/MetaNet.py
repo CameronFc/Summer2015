@@ -82,8 +82,15 @@ class MetaNet:
         for i in range(sys.maxsize):
             totalCost = 0
             for j in range(len(train_set_x)):
-                totalCost += self.net.train(np.array([train_set_x[j]]).transpose(), train_set_y[j])
+                #TODO: remove abs,
+                cost = np.abs(self.net.train(np.array([train_set_x[j]]).transpose(), train_set_y[j]))
+                totalCost += cost
+                #print("Cost for image {}: {}".format(j,cost))
             improvement = (oldCost - totalCost)/totalCost
+            if improvement < 0:
+                self.net.learningRate.set_value(self.net.learningRate.get_value() / 2)
+            else:
+                self.net.learningRate.set_value(self.net.learningRate.get_value() * 1.01)
             if(np.abs(improvement) < self.min_improvement):
                 print("Reached minimum improvement threshold")
                 break

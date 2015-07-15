@@ -44,7 +44,7 @@ class Renderer:
                     callArray = ["povray",
                                  dirs.path + dirs.settings,
                                  "./" + dirs.sceneDirectory + typeSwitcher(type) + fileName,
-                                 "+O" + dirs.path + dirs.imageDirectory + typeSwitcher(type) + sceneName
+                                 "+O" + dirs.path + dirs.imageDirectory + typeSwitcher(type) + dirs.dump + sceneName
                                  ] + (self.callArrayOptions)
                     returncode = call(callArray, stdout=open(os.devnull, "w"),  stderr=STDOUT)
                     if returncode != 0 and verboseRender:
@@ -80,7 +80,7 @@ class Renderer:
         formatter = format.Formatter()
         path = dirs.imageDirectory + typeSwitcher(type)
         # Only appends files with name as prefix
-        files, fileNames = formatter.getDesiredFiles("./" + path, name)
+        files, fileNames = formatter.getDesiredFiles("./" + path + dirs.dump, name)
         print("Num files appended: {}".format(len(files)))
         # Put the concatenated images into the anim directory
         commandArray = ["convert", "+append", path + animSwitcher(self.animType) + name + dirs.imageExt]
