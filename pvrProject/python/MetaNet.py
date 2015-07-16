@@ -24,12 +24,15 @@ class MetaNet:
         self.file_name = options.get('file_name')
         self.test_name = options.get('test_name')
         self.anim_type = options.get('anim_type')
+        self.supervised = options.get('supervised')
+        self.l1_strength = options.get("l1_strength")
         self.y_formatter = y_formatter
         self.test_function = test_function
         self.input_dim = self.get_input_dim()
         self.test_output_layers = []
+        self.learning_rate=options.get('learning_rate', 0.001)
         # Init net
-        self.net = LLNet()
+        self.net = LLNet(learningRate=self.learning_rate, l1_strength=self.l1_strength)
 
     def add_layer(self, input,dims, activator=None):
         self.net.add_layer(input, dims, activator)
@@ -46,7 +49,7 @@ class MetaNet:
 
     def add_cost(self, func):
         self.net.cost = func + self.net.regularization
-        self.net.update_graphs()
+        self.net.update_graphs(supervised=self.supervised)
 
     def get_formatted_dataset(self, name, file_limit, type, anim_type):
         formatter = Formatter(anim_type=anim_type)
@@ -86,8 +89,12 @@ class MetaNet:
         for i in range(sys.maxsize):
             totalCost = 0
             for j in range(len(train_set_x)):
-                #TODO: remove abs,
-                cost = np.abs(self.net.train(np.array([train_set_x[j]]).transpose(), train_set_y[j]))
+                x = np.array([train_set_x[j]]).transpose()
+                y = train_set_y[j]
+                cost = (
+                    self.net.train(x,y) if self.supervised == 1
+                    else self.net.train(x)
+                )
                 totalCost += cost
                 #print("Cost for image {}: {}".format(j,cost))
             improvement = (oldCost - totalCost)/totalCost

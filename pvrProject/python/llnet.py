@@ -32,7 +32,7 @@ class HiddenLayer:
 class LLNet:
     def __init__(self, **kwargs):
         print("Initializing LLNet...")
-        self.L1reg = 0.0001
+        self.L1reg = kwargs.get('l1_strength', 0.01)
         self.learningRate = theano.shared(kwargs.get("learningRate", 0.001), name="learningRate")
         self.x = T.matrix("x")
         self.y = T.matrix("y")
@@ -47,21 +47,29 @@ class LLNet:
             self.params += layer.params
         # Update Regularization
         self.regularization = 0.0
-        for i in (param.sum() for param in self.params):
-            self.regularization += self.L1reg * i
+        for param in self.params:
+            b = T.abs_(param)
+            self.regularization += self.L1reg * b.sum()
 
-    def update_graphs(self):
+    def update_graphs(self, supervised=1):
         # Update Gradients
         self.gparams = [T.grad(self.cost, param) for param in self.params]
         # Update Updates
         self.updates = [
                     (param, param - self.learningRate * gparam) for param, gparam in zip(self.params,self.gparams)
                     ]
-        self.train = theano.function(
-              inputs=[self.x,self.y],
-              outputs=self.cost,
-              updates=self.updates
-        )
+        if supervised:
+            self.train = theano.function(
+                  inputs=[self.x,self.y],
+                  outputs=self.cost,
+                  updates=self.updates
+            )
+        else:
+            self.train = theano.function(
+                  inputs=[self.x],
+                  outputs=self.cost,
+                  updates=self.updates
+            )
 
     def add_layer(self, input, dims, activator=None):
         self.layers += [HiddenLayer(input, dims, self.num_layers, activator)]

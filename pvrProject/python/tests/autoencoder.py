@@ -1,7 +1,6 @@
 from python import MetaNet as mn
-import theano
-import theano.tensor as T
 from header import dirs
+from format import displayImage
 
 dirs.path += "../"
 
@@ -15,33 +14,34 @@ def y_formatting_func(dict):
             ] # Need vectors of same length in matrix
 
 iteratives = {
-    'num_missed': 0
+
 }
 
 # Define how we want to display the results of testing
 def test_function(value_arrays, image_y):
+    # Shape of array: (1,14400,1)
     # Value_arrays is always a 3-dimensional matrix
-    print("Predicted size: ", value_arrays[2][0][0], "Actual size: ", image_y[2][0])
-    print("Predicted class: ", value_arrays[1].argmax(), "Actual class: ", image_y[1][0])
-    if value_arrays[1].argmax() - image_y[1][0]:
-        iteratives['num_missed'] += 1
-
+    print(value_arrays[0].transpose())
+    displayImage(value_arrays[0].reshape((60,80, 3)))
 
 options = {
-    'test_name': 'sizes',
-    'file_name': "VaryingSizeCubes",
-    'anim_type': "PANIM",
+    'test_name': 'auto',
+    'file_name': "StaticCube",
+    'anim_type': "PSTATIC",
+    'supervised': 0,
     'train_file_limit': 10,
     'test_file_limit': 10,
-    'min_improvement': 0.01
+    'learning_rate': (0.001),
+    'min_improvement': 0.01,
+    'l1_strength': 1
 }
 
 Meta = mn.MetaNet(y_formatting_func, test_function, **options)
 
-nfln = 10 # num first layer neurons
-l2n = Meta.input_dim / 2
-l3n = Meta.input_dim / 4
-l4n = Meta.input_dim / 2
+# Meta.input_dim / 2
+l2n = 400
+l3n = 50
+l4n = l2n
 
 num_classes = 8
 # 4 layers from 4x -> 2x-> x-> 2x-> 4x
@@ -52,7 +52,7 @@ Meta.add_layer(Meta.get_layer(2).output, [Meta.input_dim, l4n])
 
 
 # Add custom cost function
-cost = ((Meta.get_layer(3).output - Meta.get_x())**2).sum()
+cost = ((Meta.get_layer(3).output - Meta.get_x())**2).sum() * 0.1**20
 # Regularization added automatically
 Meta.add_cost(cost)
 
@@ -60,8 +60,6 @@ Meta.add_cost(cost)
 Meta.test_output_layers = [3]
 
 Meta.train()
-#Meta.test()
-#Meta.save()
+Meta.save()
 #Meta.load_last()
 #Meta.test()
-#print("Mis-classifications of colors: ", iteratives.get('num_missed'))

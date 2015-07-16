@@ -59,11 +59,11 @@ class tests:
 
     @staticmethod
     def CARAS():
-        type = "PTRAIN"
+        type = "PTESTS"
         if(typeSwitcher(type) == ""):
             print("ERROR: Invalid type: {}".format(type))
             sys.exit(0)
-        frames = 1
+        frames = 20
         numAnims = 100
         # Use this to vary the name of the images we want to create
         index_name = "StaticCube"
@@ -75,7 +75,7 @@ class tests:
             #bugfix
             sc.secondAnimation(name, type, index_name)
             # sc.createBasicAnimation(name, 0)
-            renderer = r.Renderer()
+            renderer = r.Renderer(frames=None)
             renderer.renderByName(name, type)
             renderer.appendImages(name, type)
         print("Completed Anim rendering")

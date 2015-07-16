@@ -31,14 +31,15 @@ options = {
     'test_name': 'sizes',
     'file_name': "VaryingSizeCubes",
     'anim_type': "PANIM",
-    'train_file_limit': 10,
+    'supervised': 1,
+    'train_file_limit': 50,
     'test_file_limit': 10,
-    'min_improvement': 0.01
+    'min_improvement': 0.001
 }
 
 Meta = mn.MetaNet(y_formatting_func, test_function, **options)
 
-nfln = 10 # num first layer neurons
+nfln = 40 # num first layer neurons
 num_classes = 8
 # Base non-linear layer
 Meta.add_layer(Meta.get_x(), [nfln, Meta.input_dim], T.tanh)
@@ -64,9 +65,9 @@ Meta.add_cost(color_cost)
 # Specify the indices of what layers we want to come out of the classify function
 Meta.test_output_layers = [1,2,3]
 
-#Meta.train()
+Meta.train()
 #Meta.test()
-#Meta.save()
+Meta.save()
 Meta.load_last()
 Meta.test()
 print("Mis-classifications of colors: ", iteratives.get('num_missed'))

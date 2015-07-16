@@ -13,13 +13,6 @@ class Formatter:
     def __init__(self, anim_type="PSTATIC"):
         self.anim_type = anim_type
 
-    def readImage(self, pathname):
-        return misc.imread(pathname)
-
-    def displayImage(self, image):
-        plt.imshow(image, cmap=plt.cm.gray)
-        plt.show()
-
     def getClass(self, imageName, type, index_name):
         for scene in unPickleIndex(type, index_name):
             if scene.get("name") == imageName:
@@ -32,12 +25,14 @@ class Formatter:
         if file_limit == None:
             file_limit = sys.maxsize
         desired_files, names = getDesiredFiles(dirs.path + dirs.imageDirectory + typeSwitcher(type) + animSwitcher(self.anim_type), name)
+        if(len(names) == 0):
+            print("Could not find any files with type {}, anim_type {}, name {}".format(type,self.anim_type,name))
         # Limit the number of classes and images to the filelimit
         file_list, name_list = desired_files[:file_limit], names[:file_limit]
         image_array = []
         class_array = []
         for path_file, image_name in zip(file_list, name_list):
-            image_array.append(self.readImage(path_file).flatten())
+            image_array.append(readImage(path_file).flatten())
             class_array.append(self.getClass(image_name, type, name))
         print("COMPLETED: Loading image files")
         return image_array, class_array
@@ -56,3 +51,10 @@ def getDesiredFiles(path, name):
         print("SPECIFIY A NAME!")
         sys.exit(0)
     return desiredFiles, fileNames
+
+def displayImage(image):
+    plt.imshow(image, cmap=plt.cm.gray)
+    plt.show()
+
+def readImage(pathname):
+    return misc.imread(pathname)
