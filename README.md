@@ -17,8 +17,9 @@ pip3 install matplotlib
 pip3 install numpy
 ```
 
-To run, call inside of pvrProject/python:
-```
-python3 tests.py
-```
+July 16 2015 Update:
+
+Unless you have the pythonpath environment variable set to pvrproject/python, files will not function.
+
+In the future, a /scripts folder will be added, so that users can actually run the programs from terminal.
 
