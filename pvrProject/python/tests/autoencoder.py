@@ -39,34 +39,29 @@ options = {
 Meta = mn.MetaNet(y_formatting_func, test_function, **options)
 
 nfln = 10 # num first layer neurons
+l2n = Meta.input_dim / 2
+l3n = Meta.input_dim / 4
+l4n = Meta.input_dim / 2
+
 num_classes = 8
-# Base non-linear layer
-Meta.add_layer(Meta.get_x(), [nfln, Meta.input_dim], T.tanh)
-# Position estimation layer
-Meta.add_layer(Meta.get_layer(0).output, [3, nfln])
-# Add an n-sized multi-layer to be handled by a softmax # Color layer
-Meta.add_layer(Meta.get_layer(0).output, [num_classes,nfln])
-# Size estimator layer
-Meta.add_layer(Meta.get_layer(0).output, [1, nfln])
+# 4 layers from 4x -> 2x-> x-> 2x-> 4x
+Meta.add_layer(Meta.get_x(), [l2n, Meta.input_dim])
+Meta.add_layer(Meta.get_layer(0).output, [l3n, l2n])
+Meta.add_layer(Meta.get_layer(1).output, [l4n, l3n])
+Meta.add_layer(Meta.get_layer(2).output, [Meta.input_dim, l4n])
+
 
 # Add custom cost function
-position_cost = ((Meta.get_layer(1).output.transpose() - Meta.get_y()[0])**2).sum()
-size_cost = (Meta.get_layer(3).output[0][0] - Meta.get_y()[2][0])**2
-# Color cost section
-exp_out = T.exp(Meta.get_layer(2).output)
-normalized = (exp_out / exp_out.sum())
-class_index = theano.tensor.cast(Meta.get_y()[1][0], 'int64')
-correct_class_prob = normalized[class_index]
-color_cost =  -T.log(correct_class_prob)[0] # Returns an array; use first and only value
+cost = ((Meta.get_layer(3).output - Meta.get_x())**2).sum()
 # Regularization added automatically
-Meta.add_cost(color_cost)
+Meta.add_cost(cost)
 
 # Specify the indices of what layers we want to come out of the classify function
-Meta.test_output_layers = [1,2,3]
+Meta.test_output_layers = [3]
 
-#Meta.train()
+Meta.train()
 #Meta.test()
 #Meta.save()
-Meta.load_last()
-Meta.test()
-print("Mis-classifications of colors: ", iteratives.get('num_missed'))
+#Meta.load_last()
+#Meta.test()
+#print("Mis-classifications of colors: ", iteratives.get('num_missed'))

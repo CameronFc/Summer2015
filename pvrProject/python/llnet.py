@@ -18,10 +18,10 @@ rng = np.random
 #theano.config.compute_test_value = 'warn'
 
 class HiddenLayer:
-    def __init__(self, input, dims, activation=None):
+    def __init__(self, input, dims, num_layers, activation=None):
         wBase = rng.randn(*dims)
-        self.w = theano.shared(wBase, name='w')
-        self.b = theano.shared(0. , name='b')
+        self.w = theano.shared(wBase, name='w' + str(num_layers))
+        self.b = theano.shared(0. , name='b' + str(num_layers))
         linOutput = T.dot(self.w, input) + self.b
         self.output = (
             linOutput if activation is None
@@ -37,6 +37,7 @@ class LLNet:
         self.x = T.matrix("x")
         self.y = T.matrix("y")
         self.layers = []
+        self.num_layers = 0
         print("COMPLETED: Intializing LLNet")
 
     def update_params(self):
@@ -63,11 +64,12 @@ class LLNet:
         )
 
     def add_layer(self, input, dims, activator=None):
-        self.layers += [HiddenLayer(input, dims, activator)]
+        self.layers += [HiddenLayer(input, dims, self.num_layers, activator)]
+        self.num_layers += 1
 
-    def saveParams(self):
+    def saveParams(self, file_name):
         # Get current date-time string
-        name = strftime("%Y-%m-%d_%H-%M-%S")
+        name = strftime(file_name + "-" +"%Y-%m-%d_%H-%M-%S")
         with open(dirs.path + dirs.savedDataDirectory + name + dirs.savedDataExt, 'a+b') as out:
             params = {}
             for p in self.params:

@@ -2,10 +2,6 @@ from templates import Tstrings as temps
 
 #Object generator for scene files for povray
 
-#Must need some kind of transfer mechanism to pass to a scene creator to save a total scene file
-# return type: some kind of string is appropriate...
-#
-
 #6-7 shapes cone plane shpere cube cylinder , 2D versions
 #Different objects rotation position finish
 #directional and point lights
@@ -30,11 +26,12 @@ class ObjectCreator:
         str = temps.getTemplateString("rectPrism").format(position=pos, color=color, endPoint=sizes, halfPosition=nHalfSizes, rotString=rotStr)
         self.scene += str
 
-    def addCone(self, xyz, xyz2, color, rot=None):
+    # Use this to add cylinders by r1=r2
+    def addCone(self, xyz, xyz2, r1, r2, color, rot=None):
         rotStr = self.getRotStr(rot)
         center_1 = self.VString.format(*xyz)
         center_2 = self.VString.format(*xyz2)
-        str = temps.getTemplateString("cone").format(center_1=center_1,center_2=center_2,color=color,rotStr=rotStr)
+        str = temps.getTemplateString("cone").format(center_1=center_1,center_2=center_2,radius_1=r1,radius_2=r2,color=color,rotStr=rotStr)
         self.scene += str
 
     def addPlane(self, xyz, lw, color, rot=None):
@@ -48,7 +45,7 @@ class ObjectCreator:
         str = "light_source {{ {0} {1} }} \n".format(pos, colors)
         self.scene += str
 
-    # Create povray string for rotation with clock param
+    # Create povray string for rotation with clock param embedded
     def getRotStr(self, rot):
         if rot != None:
             # Rotation amounts by clock cycle
@@ -57,10 +54,3 @@ class ObjectCreator:
             return rotStr
         else:
             return ""
-
-
-#objC = objectCreator()
-#objC.addSphere([0,1,2], 3, [1.0,0.5,0.3])
-#objC.addRectPrism([0,1,2], [1,1,1], [1.0,0.5,0.3])
-#objC.addPlane([0,1,2], [3,4], [1.0,0.5,0.3])
-#objC.addPointLight([3,3,3], [0.1,0.2,0.5])

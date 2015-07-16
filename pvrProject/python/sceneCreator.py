@@ -66,6 +66,28 @@ def third_animation(scene_name, type, index_name):
            "name" : scene_name}
     sceneFromObjCreator(scene_name, objC, dict, type, index_name)
 
+def fourth_animation(scene_name, type, index_name):
+    objC = oc.ObjectCreator()
+    rot = list(rng.randint(0,360, 3))
+    color = getRandColor()
+    size = rng.random_sample(1)[0] * 1.5 + 1
+    objC.addCone([0.0,0.0,0.0], [1,1,1], color, rot)
+    xyz=getxyz(10)
+    objC.addPointLight(xyz, [1,1,1])
+    dict = {"objects" :
+                [
+                    {"light":
+                         {"position" : xyz}
+                    },
+                    {"rect":
+                         {"color": color,
+                          "color_class": get_color_class(color),
+                          "size": size}
+                    }
+                ],
+           "name" : scene_name}
+    sceneFromObjCreator(scene_name, objC, dict, type, index_name)
+
 ##################################################################################################
 ## Helpers
 

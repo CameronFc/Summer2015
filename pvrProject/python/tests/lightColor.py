@@ -24,7 +24,8 @@ def test_function(value_arrays, image_y):
 
 
 options = {
-    'file_names' : "TestAnimation",
+    'test_name': 'lightColor',
+    'file_name' : "TestAnimation",
     'anim_type': "PANIM",
     'train_file_limit': 100,
     'test_file_limit': 10,

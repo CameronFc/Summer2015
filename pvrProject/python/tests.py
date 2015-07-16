@@ -59,23 +59,23 @@ class tests:
 
     @staticmethod
     def CARAS():
-        type = "PTESTS"
+        type = "PTRAIN"
         if(typeSwitcher(type) == ""):
             print("ERROR: Invalid type: {}".format(type))
             sys.exit(0)
-        frames = 20
-        numAnims = 20
+        frames = 1
+        numAnims = 100
         # Use this to vary the name of the images we want to create
-        index_name = "VaryingSizeCubes"
+        index_name = "StaticCube"
         sc.clearPickleIndex(type, index_name)
         for i in range(numAnims):
             #need a delimiter to separate scene# from frame#
             delim = "D"
             name = index_name + str(i) + delim
             #bugfix
-            sc.third_animation(name, type, index_name)
+            sc.secondAnimation(name, type, index_name)
             # sc.createBasicAnimation(name, 0)
-            renderer = r.Renderer(frames=frames)
+            renderer = r.Renderer()
             renderer.renderByName(name, type)
             renderer.appendImages(name, type)
         print("Completed Anim rendering")

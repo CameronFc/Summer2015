@@ -29,10 +29,15 @@ def typeSwitcher(x):
 #Are we creating an animated scene?
 def animSwitcher(x):
     return {
-        'PSTATIC': "",
+        'PSTATIC': "static/",
         'PANIM': "anim/"
     }.get(str(x),"")
 
+def dumpSwitcher(x):
+    return (
+        dirs.dump if x == "PANIM"
+        else animSwitcher(x)
+    )
 
 # Old header tools
 classes = {

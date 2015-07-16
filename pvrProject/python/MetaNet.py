@@ -1,9 +1,12 @@
 from llnet import LLNet
 from format import Formatter
+from header import dirs
+from format import getDesiredFiles
 import time
 import sys
 import numpy as np
 import theano
+import os
 import theano.tensor as T
 
 # If we want to reverse the order w.x back to x.w, we need to remove the transposes in this file
@@ -18,7 +21,8 @@ class MetaNet:
         self.test_file_limit = options.get('test_file_limit', 10)
         self.min_improvement = options.get('min_improvement', 0.01)
 
-        self.file_names = options.get('file_names')
+        self.file_name = options.get('file_name')
+        self.test_name = options.get('test_name')
         self.anim_type = options.get('anim_type')
         self.y_formatter = y_formatter
         self.test_function = test_function
@@ -57,7 +61,7 @@ class MetaNet:
     def get_input_dim(self):
         # Cheating: Get a single file from the training set, and see what size it is
         dataset_options = {
-            'name': self.file_names,
+            'name': self.file_name,
             'type': "PTRAIN",
             'anim_type': self.anim_type,
             'file_limit': 1
@@ -69,7 +73,7 @@ class MetaNet:
     def train(self):
         # Get the formatted training set
         dataset_options = {
-            'name': self.file_names,
+            'name': self.file_name,
             'type': "PTRAIN",
             'anim_type': self.anim_type,
             'file_limit': self.train_file_limit
@@ -87,10 +91,6 @@ class MetaNet:
                 totalCost += cost
                 #print("Cost for image {}: {}".format(j,cost))
             improvement = (oldCost - totalCost)/totalCost
-            if improvement < 0:
-                self.net.learningRate.set_value(self.net.learningRate.get_value() / 2)
-            else:
-                self.net.learningRate.set_value(self.net.learningRate.get_value() * 1.01)
             if(np.abs(improvement) < self.min_improvement):
                 print("Reached minimum improvement threshold")
                 break
@@ -100,7 +100,7 @@ class MetaNet:
 
     def test(self):
         dataset_options = {
-            'name' : self.file_names,
+            'name' : self.file_name,
             'type' : "PTESTS",
             'anim_type' : self.anim_type,
             'file_limit' : self.test_file_limit
@@ -114,6 +114,22 @@ class MetaNet:
             inputs=[self.net.x],
             outputs=[(self.get_layer(element).output) for element in self.test_output_layers]
         )
-        # Why np.array([]).transpose() ? need to go 'dim' -> [1,dim] -> [dim,1] as in above
+        # Why np.array([]).transpose()? need to go 'dim' -> [1,dim] -> [dim,1] as in training above
+        # Outputs a 3-dimensional array of the outputs for each test layer specified.
         self.test_function(get_test_output(np.array([image_x]).transpose()), image_y)
+
+    def save(self):
+        name = self.test_name + "-" + self.file_name
+        # Save as test-image-date
+        self.net.saveParams(name)
+
+    def load(self, file_name):
+        self.net.loadParams(file_name)
+
+    def load_last(self):
+        path = dirs.path + dirs.savedDataDirectory
+        files, names = getDesiredFiles(path, self.test_name)
+        # Return the most recent one; should be in order of date
+        self.net.loadParams(names[-1])
+
 

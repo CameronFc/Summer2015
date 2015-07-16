@@ -5,21 +5,22 @@ import os
 from header import dirs
 from header import typeSwitcher
 from header import animSwitcher
+from header import dumpSwitcher
 from subprocess import call
 from subprocess import check_output
 from subprocess import STDOUT
-import format
+from format import getDesiredFiles
 
 #TODO: Make this actually verobose instead of just errors
 #TODO: Fix this renderer init garbage!
 verboseRender = True
 
 class Renderer:
-    def __init__(self, frames=-1, clockFinal=0):
+    def __init__(self, frames=None, clockFinal=0):
 
         #Can't include +KFF-1 in command line as this appends '1' to the end of every file
         frameParam = (
-            "+KFF" + str(frames) if frames != -1
+            "+KFF" + str(frames) if frames != None
             else ""
         )
         self.callArrayOptions = [
@@ -27,13 +28,14 @@ class Renderer:
                             frameParam
                          ]
         self.animType = (
-            "PSTATIC" if frames == -1
+            "PSTATIC" if frames == None
             else "PANIM"
         )
 
     def renderImages(self, files, type):
         renderCount = 0
         renderTotal = 0
+        # Want the files to be in the dump for animations, static otherwise
         for fileName in files:
             if fileName[-(len(dirs.sceneExt)):] == dirs.sceneExt:
                 renderTotal += 1
@@ -77,10 +79,9 @@ class Renderer:
         self.renderImages([fileName], type)
 
     def appendImages(self, name, type="PTRAIN"):
-        formatter = format.Formatter()
         path = dirs.imageDirectory + typeSwitcher(type)
         # Only appends files with name as prefix
-        files, fileNames = formatter.getDesiredFiles("./" + path + dirs.dump, name)
+        files, fileNames = getDesiredFiles("./" + path + dirs.dump, name)
         print("Num files appended: {}".format(len(files)))
         # Put the concatenated images into the anim directory
         commandArray = ["convert", "+append", path + animSwitcher(self.animType) + name + dirs.imageExt]

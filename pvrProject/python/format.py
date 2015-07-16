@@ -9,8 +9,6 @@ import os
 import sys
 import numpy as np
 
-#TODO: Make getDesiredFiles static, it's irrespective of everything
-
 class Formatter:
     def __init__(self, anim_type="PSTATIC"):
         self.anim_type = anim_type
@@ -28,26 +26,12 @@ class Formatter:
                 return scene
         print("Failed to locate class data of image " + imageName)
 
-    def getDesiredFiles(self, path, name):
-        files = os.listdir(path)
-        desiredFiles = []
-        fileNames = []
-        if name != "":
-            for file in files:
-                if name in file:
-                    desiredFiles.append(path + file)
-                    fileNames.append(file[:-(len(dirs.imageExt))])
-        else:
-            print("SPECIFIY A NAME!")
-            sys.exit(0)
-        return desiredFiles, fileNames
-
     #TODO: Make sure that the files are all of the same dimension before constructing the image array
     def get_dataset(self, type="", name="", file_limit=None):
         print("Loading image files...")
         if file_limit == None:
             file_limit = sys.maxsize
-        desired_files, names = self.getDesiredFiles(dirs.path + dirs.imageDirectory + typeSwitcher(type) + animSwitcher(self.anim_type), name)
+        desired_files, names = getDesiredFiles(dirs.path + dirs.imageDirectory + typeSwitcher(type) + animSwitcher(self.anim_type), name)
         # Limit the number of classes and images to the filelimit
         file_list, name_list = desired_files[:file_limit], names[:file_limit]
         image_array = []
@@ -57,3 +41,18 @@ class Formatter:
             class_array.append(self.getClass(image_name, type, name))
         print("COMPLETED: Loading image files")
         return image_array, class_array
+
+# Returns files with path pre-appended, and also the raw file names themselves
+def getDesiredFiles(path, name):
+    files = os.listdir(path)
+    desiredFiles = []
+    fileNames = []
+    if name != "":
+        for file in files:
+            if name in file:
+                desiredFiles.append(path + file)
+                fileNames.append(file[:-(len(dirs.imageExt))])
+    else:
+        print("SPECIFIY A NAME!")
+        sys.exit(0)
+    return desiredFiles, fileNames
