@@ -59,7 +59,7 @@ Meta.add_cost(cost)
 # Specify the indices of what layers we want to come out of the classify function
 Meta.test_output_layers = [3]
 
-Meta.train()
-Meta.save()
-#Meta.load_last()
-#Meta.test()
+# Meta.train()
+# Meta.save()
+# Meta.load_last()
+Meta.test()
