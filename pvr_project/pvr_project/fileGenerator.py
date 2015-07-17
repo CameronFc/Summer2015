@@ -9,7 +9,8 @@ import alteration as alt
 import os
 import sys
 
-class tests:
+
+class FileGenerator:
 
     @staticmethod
     def convertAllToGreyScale():
@@ -43,6 +44,7 @@ class tests:
 #TODO: Change to completely uncompressed targa format, disallow unlike images
 #TODO: Changing number of frames requires the deletion of all images in the root type directory! (bad)
 #TODO: Naming convention is also different depending on the amount of files produced, should change (ex. 1 vs 01 vs 001)
+#TODO: Use .append and generators instead of += for lists
 
-tests.CARAS()
+FileGenerator.CARAS()
 #tests.convertAllToGreyScale()

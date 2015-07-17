@@ -1,9 +1,9 @@
-from python import MetaNet as mn
+import MetaNet as mn
+from header import dirs
 import theano
 import theano.tensor as T
-from header import dirs
 
-dirs.path += "../"
+# dirs.path += "../"
 
 # Define how dicts of scenes are processed
 def y_formatting_func(dict):
