@@ -6,8 +6,6 @@ import time
 import sys
 import numpy as np
 import theano
-import os
-import theano.tensor as T
 
 # If we want to reverse the order w.x back to x.w, we need to remove the transposes in this file
 # and also change the order of the layer parameters here and in LLNet.

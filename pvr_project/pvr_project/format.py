@@ -1,13 +1,10 @@
 from header import dirs
 from header import typeSwitcher
-from header import animSwitcher
-from header import classToInt
 from scipy import misc
 from sceneCreator import unPickleIndex
 import matplotlib.pyplot as plt
 import os
 import sys
-import numpy as np
 
 class Formatter:
     def __init__(self, anim_type="PSTATIC"):

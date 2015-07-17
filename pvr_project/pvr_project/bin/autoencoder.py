@@ -1,5 +1,6 @@
 import MetaNet as MN
 from format import displayImage
+from format import readImage
 
 
 class CustomFunctions():
@@ -18,7 +19,6 @@ class CustomFunctions():
     def test_function(value_arrays, image_y):
         # Shape of array: (1,14400,1)
         # Value_arrays is always a 3-dimensional matrix
-        print(value_arrays[0].transpose())
         displayImage(value_arrays[0].reshape((60, 80, 3)))
 
 class AutoEncoder():
@@ -28,10 +28,10 @@ class AutoEncoder():
             'file_name': "StaticCube",
             'anim_type': "PSTATIC",
             'supervised': 0,
-            'train_file_limit': 10,
+            'train_file_limit': 100,
             'test_file_limit': 10,
             'learning_rate': 0.01,
-            'min_improvement': 0.01,
+            'min_improvement': 0.001,
             'l1_strength': 1
         }
         self.y_formatting_func = CustomFunctions.y_formatting_func
@@ -41,8 +41,8 @@ class AutoEncoder():
     def create_meta_net(self):
         self.Meta = MN.MetaNet(self.y_formatting_func, self.test_func, **self.options)
         # Specify layer dimensions
-        l2n = 400
-        l3n = 50
+        l2n = 1000
+        l3n = 500
         l4n = l2n
         num_classes = 8
         # 4 layers from 4x -> 2x-> x-> 2x-> 4x

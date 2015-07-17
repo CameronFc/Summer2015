@@ -1,12 +1,7 @@
-from header import dirs
 from header import typeSwitcher
-import header
 import rendering as r
-from logistic import Logistic
 import sceneCreator as sc
-import format
 import alteration as alt
-import os
 import sys
 
 
