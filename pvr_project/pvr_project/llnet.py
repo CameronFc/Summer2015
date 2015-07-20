@@ -58,6 +58,7 @@ class ConvLayer(HiddenLayer):
     def im_to_col(self, input, dims):
         reshaped_image = input.reshape(dims)
 
+
     # Note this requires format of (depth, x, y)
     def get_padded_image(self, input, dims, padding_width=1):
         depth = dims[0]
@@ -66,7 +67,7 @@ class ConvLayer(HiddenLayer):
         padded_image = np.zeros((depth, len_x + 2 * padding_width, len_y + 2 * padding_width))
         for i in range(depth):
             layer = input[i,:,:]
-            padded_image[i,padding_width:len_x + padding_width,padding_width:len_y + padding_width] = layer
+            padded_image[i, padding_width:padding_width + len_x, padding_width:padding_width + len_y] = layer
         return(padded_image)
 
 class LLNet:

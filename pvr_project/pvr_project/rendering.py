@@ -11,25 +11,17 @@ from subprocess import STDOUT
 from format import getDesiredFiles
 
 #TODO: Make this actually verobose instead of just errors
-#TODO: Fix this renderer init garbage!
 verboseRender = True
 
 class Renderer:
     def __init__(self, frames=None, clockFinal=0):
-
         #Can't include +KFF-1 in command line as this appends '1' to the end of every file
-        frameParam = (
-            "+KFF" + str(frames) if frames != None
-            else ""
-        )
+        frameParam = "+KFF" + str(frames) if frames != None else ""
         self.callArrayOptions = [
-                            "-GA",
-                            frameParam
-                         ]
-        self.animType = (
-            "PSTATIC" if frames == None
-            else "PANIM"
-        )
+                                "-GA",
+                                frameParam
+                                ]
+        self.animType = "PSTATIC" if frames == None else "PANIM"
 
     def renderImages(self, files, type):
         renderCount = 0
