@@ -34,6 +34,7 @@ class Sizes:
             'file_name': "VaryingSizeCubes",
             'anim_type': "PANIM",
             'supervised': 1,
+            'flatten_input': True,
             'train_file_limit': 50,
             'test_file_limit': 10,
             'min_improvement': 0.001

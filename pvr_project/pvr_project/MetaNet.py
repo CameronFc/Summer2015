@@ -18,6 +18,7 @@ class MetaNet:
         self.train_file_limit = options.get('train_file_limit',50)
         self.test_file_limit = options.get('test_file_limit', 10)
         self.min_improvement = options.get('min_improvement', 0.01)
+        self.flatten_input = options.get('flatten_input', True)
 
         self.file_name = options.get('file_name')
         self.test_name = options.get('test_name')
@@ -54,6 +55,9 @@ class MetaNet:
         set_x, set_y = formatter.get_dataset(type=type, name=name, file_limit=file_limit)
         for index, dict in enumerate(set_y):
             set_y[index] = self.format_y(dict)
+        if self.flatten_input:
+            for index, dict in enumerate(set_x):
+                set_x[index] = dict.flatten()
         return set_x, set_y
 
     def format_y(self, dict):

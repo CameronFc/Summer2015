@@ -1,5 +1,6 @@
 from header import dirs
 from header import typeSwitcher
+from header import animSwitcher
 from scipy import misc
 from sceneCreator import unPickleIndex
 import matplotlib.pyplot as plt

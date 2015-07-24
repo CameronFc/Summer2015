@@ -3,6 +3,7 @@ import theano
 import theano.tensor as T
 import sys
 import pickle
+import convLayer
 from time import strftime
 from header import dirs
 rng = np.random
@@ -27,48 +28,49 @@ class HiddenLayer:
         )
         self.params = [self.w,self.b]
 
-
-class ConvLayer(HiddenLayer):
-    def __init__(self, input, dims, num_layers, activation=None):
-        HiddenLayer.__init__(input, dims, num_layers, activation=None)
-        self.rfs = 3 # Receptive field always square
-        self.stride = 1
-        self.zero_padding = 1
-        # We want to pad zeros along the sides
-        # Each neuron in the conv layer is responsible for one receptive field
-        y = 60
-        x = 80
-        self.output = []
-        image = input.reshape((y,x,3))
-        for step_x in range((x - self.rfs)/self.stride + 1):
-            for step_y in range((y - self.rfs)/self.stride + 1):
-                w_i = theano.shared(rng.randn(self.rfs,self.rfs), name="w_i")
-                b_i = theano.shared(0., name="b_i")
-                # Here we want neuron i,j to scan pixels x,x+rfs in width
-                # and y,y+rfs in height, and also hit the three color parts of the pixels.
-                # Assume that we have a real 3D image passed into this layer.
-                x_1 = self.stride * step_x
-                x_2 = x_1 + self.rfs
-                y_1 = self.stride * step_y
-                y_2 = y_1 + self.rfs
-                activation_layer = T.dot(image[x_1:x_2][y_1:y_2], w_i) + b_i
-                # Now we need some way to combine the output
-                self.output.append(activation_layer)
-
-    def im_to_col(self, input, dims):
-        reshaped_image = input.reshape(dims)
-
-
-    # Note this requires format of (depth, x, y)
-    def get_padded_image(self, input, dims, padding_width=1):
-        depth = dims[0]
-        len_x = dims[1]
-        len_y = dims[2]
-        padded_image = np.zeros((depth, len_x + 2 * padding_width, len_y + 2 * padding_width))
-        for i in range(depth):
-            layer = input[i,:,:]
-            padded_image[i, padding_width:padding_width + len_x, padding_width:padding_width + len_y] = layer
-        return(padded_image)
+# class ConvLayer(HiddenLayer):
+#     def __init__(self, input, dims, num_layers, activation=None):
+#         HiddenLayer.__init__(input, dims, num_layers, activation=None)
+#
+#
+#         self.rfs = 3 # Receptive field always square
+#         self.stride = 1
+#         self.zero_padding = 1
+#         # We want to pad zeros along the sides
+#         # Each neuron in the conv layer is responsible for one receptive field
+#         y = 60
+#         x = 80
+#         self.output = []
+#         image = input.reshape((y,x,3))
+#         for step_x in range((x - self.rfs)/self.stride + 1):
+#             for step_y in range((y - self.rfs)/self.stride + 1):
+#                 w_i = theano.shared(rng.randn(self.rfs,self.rfs), name="w_i")
+#                 b_i = theano.shared(0., name="b_i")
+#                 # Here we want neuron i,j to scan pixels x,x+rfs in width
+#                 # and y,y+rfs in height, and also hit the three color parts of the pixels.
+#                 # Assume that we have a real 3D image passed into this layer.
+#                 x_1 = self.stride * step_x
+#                 x_2 = x_1 + self.rfs
+#                 y_1 = self.stride * step_y
+#                 y_2 = y_1 + self.rfs
+#                 activation_layer = T.dot(image[x_1:x_2][y_1:y_2], w_i) + b_i
+#                 # Now we need some way to combine the output
+#                 self.output.append(activation_layer)
+#
+#     def im_to_col(self, input, dims):
+#         reshaped_image = input.reshape(dims)
+#
+#
+#     # Note this requires format of (depth, x, y)
+#     def get_padded_image(self, input, dims, padding_width=1):
+#         depth = dims[0]
+#         len_x = dims[1]
+#         len_y = dims[2]
+#         padded_image = np.zeros((depth, len_x + 2 * padding_width, len_y + 2 * padding_width))
+#         for i in range(depth):
+#             layer = input[i,:,:]
+#             padded_image[i, padding_width:padding_width + len_x, padding_width:padding_width + len_y] = layer
+#         return(padded_image)
 
 class LLNet:
     def __init__(self, **kwargs):
@@ -114,6 +116,10 @@ class LLNet:
 
     def add_layer(self, input, dims, activator=None):
         self.layers += [HiddenLayer(input, dims, self.num_layers, activator)]
+        self.num_layers += 1
+
+    def add_conv_layer(self, input, filter_shape, image_shape, poolsize):
+        self.layers += [convLayer.ConvLayer(input, filter_shape, image_shape, poolsize)]
         self.num_layers += 1
 
     def saveParams(self, file_name):

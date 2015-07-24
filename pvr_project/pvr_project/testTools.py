@@ -3,6 +3,8 @@ import theano
 import theano.tensor as T
 from numpy import random as rng
 import numpy as np
+from format import readImage
+from format import displayImage
 
 def save_test_results():
     pass
@@ -42,22 +44,22 @@ def display():
 #
 # print(padded_image)
 
-reshaped_image = T.tensor3(name="reshaped_image")
-image_x = T.shape(reshaped_image)[1]
-image_y = T.shape(reshaped_image)[2]
-
-stride = 1
-rfs_x = 4
-rfs_y = 4
-depth = 3
-
-filter_dims = [3,4,4]
-
-x_neurons = (image_x - rfs_x)/stride + 1
-y_neurons = T.cast((image_y - rfs_y)/stride + 1, 'int64')
-
-#out_array = theano.shared(np.array((x_neurons * y_neurons, rfs_x * rfs_y * depth)))
-out_array = T.matrix()
+# reshaped_image = T.tensor3(name="reshaped_image")
+# image_x = T.shape(reshaped_image)[1]
+# image_y = T.shape(reshaped_image)[2]
+#
+# stride = 1
+# rfs_x = 4
+# rfs_y = 4
+# depth = 3
+#
+# filter_dims = [3,4,4]
+#
+# x_neurons = (image_x - rfs_x)/stride + 1
+# y_neurons = T.cast((image_y - rfs_y)/stride + 1, 'int64')
+#
+# #out_array = theano.shared(np.array((x_neurons * y_neurons, rfs_x * rfs_y * depth)))
+# out_array = T.matrix()
 
 # def extend_array(array, ri , value):
 #     col = ri[:,x_begin:x_end,y_begin:y_end].flatten()
@@ -83,6 +85,8 @@ out_array = T.matrix()
 #     outputs=out_array
 # )
 
+img = readImage("../images/training/anim/TestAnimation0D.tga")
+print(img.sum() / len(img.flatten()))
 
 #print(func(rng.randn(3,100,100)))
 
