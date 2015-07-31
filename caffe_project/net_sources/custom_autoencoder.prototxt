@@ -1,0 +1,285 @@
+name: "Custom_Autoencoder"
+layer {
+  name: "data"
+  type: "Data"
+  top: "data"
+  transform_param {
+    scale: 0.00392156862745
+  }
+  data_param {
+    source: "../net_sources/mnist_train_lmdb"
+    batch_size: 10
+    backend: LMDB
+  }
+}
+layer {
+  name: "enc1"
+  type: "InnerProduct"
+  bottom: "data"
+  top: "enc1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 1000
+    weight_filler {
+      type: "gaussian"
+      std: 1
+      sparse: 15
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "encn1"
+  type: "Sigmoid"
+  bottom: "enc1"
+  top: "encn1"
+}
+layer {
+  name: "enc2"
+  type: "InnerProduct"
+  bottom: "encn1"
+  top: "enc2"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 500
+    weight_filler {
+      type: "gaussian"
+      std: 1
+      sparse: 15
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "encn2"
+  type: "Sigmoid"
+  bottom: "enc2"
+  top: "encn2"
+}
+layer {
+  name: "enc3"
+  type: "InnerProduct"
+  bottom: "encn2"
+  top: "enc3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 250
+    weight_filler {
+      type: "gaussian"
+      std: 1
+      sparse: 15
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "encn3"
+  type: "Sigmoid"
+  bottom: "enc3"
+  top: "encn3"
+}
+layer {
+  name: "enc4"
+  type: "InnerProduct"
+  bottom: "encn3"
+  top: "enc4"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 30
+    weight_filler {
+      type: "gaussian"
+      std: 1
+      sparse: 15
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "dec4"
+  type: "InnerProduct"
+  bottom: "enc4"
+  top: "dec4"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 250
+    weight_filler {
+      type: "gaussian"
+      std: 1
+      sparse: 15
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "decn4"
+  type: "Sigmoid"
+  bottom: "dec4"
+  top: "decn4"
+}
+layer {
+  name: "dec3"
+  type: "InnerProduct"
+  bottom: "decn4"
+  top: "dec3"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 500
+    weight_filler {
+      type: "gaussian"
+      std: 1
+      sparse: 15
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "decn3"
+  type: "Sigmoid"
+  bottom: "dec3"
+  top: "decn3"
+}
+layer {
+  name: "dec2"
+  type: "InnerProduct"
+  bottom: "decn3"
+  top: "dec2"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 1000
+    weight_filler {
+      type: "gaussian"
+      std: 1
+      sparse: 15
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "decn2"
+  type: "Sigmoid"
+  bottom: "dec2"
+  top: "decn2"
+}
+layer {
+  name: "dec1"
+  type: "InnerProduct"
+  bottom: "decn2"
+  top: "dec1"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 1
+    decay_mult: 0
+  }
+  inner_product_param {
+    num_output: 784
+    weight_filler {
+      type: "gaussian"
+      std: 1
+      sparse: 15
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
+  }
+}
+layer {
+  name: "decn1"
+  type: "Sigmoid"
+  bottom: "dec1"
+  top: "decn1"
+}
+layer {
+  name: "flatdata"
+  type: "Flatten"
+  bottom: "data"
+  top: "flatdata"
+}
+layer {
+  name: "cross_entropy_loss"
+  type: "SigmoidCrossEntropyLoss"
+  bottom: "dec1"
+  bottom: "flatdata"
+  top: "cross_entropy_loss"
+}
+layer {
+  name: "euclidean_loss"
+  type: "EuclideanLoss"
+  bottom: "decn1"
+  bottom: "flatdata"
+  top: "euclidean_loss"
+}
+

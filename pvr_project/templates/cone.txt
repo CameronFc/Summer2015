@@ -1,6 +1,0 @@
-cone {{
-    {center_1}, {radius_1}    // Center and radius of one end
-    {center_2}, {radius_2}    // Center and radius of other end
-    pigment {{ color red {color[0]} green {color[1]} blue {color[2]} }}
-    rotate {rotString}
-}}
