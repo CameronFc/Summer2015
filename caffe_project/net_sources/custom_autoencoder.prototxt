@@ -7,7 +7,7 @@ layer {
     scale: 0.00392156862745
   }
   data_param {
-    source: "../net_sources/mnist_train_lmdb"
+    source: "../net_sources/CaffeImage_lmdb"
     batch_size: 10
     backend: LMDB
   }

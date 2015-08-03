@@ -9,6 +9,9 @@ def get_color_from_cclass(cclass):
     b = int(cclass % 2)
     return [r,g,b]
 
+# Use this to create the lmdb from a listing file
+# Listing file must have format "<path/to/file> <class>" on each line for each file
+# note that the above is relative to the built caffe binary
 def convert_to_lmdb(listing_file):
     call_array = ["../net_sources/convert_imageset", "../images/", listing_file, "../net_sources/" + listing_file + "_lmdb"]
     call(call_array)

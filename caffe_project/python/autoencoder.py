@@ -65,10 +65,10 @@ def caffenet(train_lmdb, test_lmdb, batch_size=10):
     n.euclidean_loss = L.EuclideanLoss(n.decn1, n.flatdata)
     return n.to_proto()
 
-def make_net():
+def make_net(dataset):
     with open(Dirs.core_path + 'custom_autoencoder.prototxt', 'w') as f:
         f.write("name: \"Custom_Autoencoder\"\n")
-        print(caffenet('../net_sources/mnist_train_lmdb', "../net_sources/mnist_test_lmdb"), file=f)
+        print(caffenet('../net_sources/' + dataset, "../net_sources/" + dataset), file=f)
 
 def make_graph():
     try:
@@ -80,7 +80,7 @@ def make_graph():
     text_format.Merge(f.read(), _net)
     get_pydot_graph(_net,"TB").write_png("custom_graph.png")
 
-make_net()
+make_net("CaffeImage_lmdb")
 make_graph()
 
 
