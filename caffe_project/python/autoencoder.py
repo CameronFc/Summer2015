@@ -62,8 +62,6 @@ def caffenet(train_lmdb, test_lmdb, batch_size=10):
     n.cross_entropy_loss = L.SigmoidCrossEntropyLoss(n.dec1, n.flatdata)
     n.euclidean_loss = L.EuclideanLoss(n.decn1, n.flatdata)
 
-
-
     # n.pool1 = L.Pooling(n.conv1, kernel_size=2, stride=2, pool=P.Pooling.MAX)
     # n.conv2 = L.Convolution(n.pool1, kernel_size=5, num_output=50, weight_filler=dict(type='xavier'))
     # n.pool2 = L.Pooling(n.conv2, kernel_size=2, stride=2, pool=P.Pooling.MAX)
