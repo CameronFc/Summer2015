@@ -42,7 +42,7 @@ def secondAnimation(sceneName, type, index_name):
                     }
                 ],
            "name" : sceneName}
-    sceneFromObjCreator(sceneName, objC, dict, type, index_name)
+    sceneFromObjCreator(sceneName, objC, dict, type, index_name, get_color_class(color))
 
 def third_animation(scene_name, type, index_name):
     objC = oc.ObjectCreator()
@@ -98,12 +98,14 @@ def getxyz(scale):
     return xyz
 
 def get_color_class(color):
-    return int(4 * color[0] + 2 *color[1] + color[2])
+    return int(4 * color[0] + 2 * color[1] + color[2])
 
-def sceneFromObjCreator(sceneName, objC, dict, type, index_name):
+def sceneFromObjCreator(sceneName, objC, dict, type, index_name, class_value=0):
     with open("./" + dirs.sceneDirectory + typeSwitcher(type) + sceneName + dirs.sceneExt, "w") as out:
         #Save the data
         pickleToIndex(dict, type, index_name)
+        # Save the data to a text file as well
+        writeToIndex(sceneName, index_name, class_value)
         #What actually creates the scene file
         out.write(objC.scene)
 
@@ -164,16 +166,13 @@ def clearPickleIndex(type, index_name):
     print("Cleared {} Index".format(typeSwitcher(type) + index_name + dirs.index_ext))
 
 ##################################################################################################
-## Old text based:
-def clearIndex():
-    with open(dirs.path + dirs.index, "w") as out:
+## Text based:
+def clearIndex(index_name):
+    print("Cleared index {}.txt".format(index_name))
+    with open(dirs.path + dirs.indices + index_name, "w") as out:
         out.write("")
 
-def writeToIndex(*args, d=','):
-    with open(dirs.path + dirs.index, "a") as out:
-        str = ""
-        for x in args:
-            str += x + d
-        #remove last delimeter
-        str = str[:-1]
-        out.write(str + "\n")
+def writeToIndex(scene_name, index_name, class_value):
+    with open(dirs.path + dirs.indices + index_name, "a") as out:
+        line = scene_name + dirs.imageExt + " " + str(class_value)
+        out.write(line+ "\n")

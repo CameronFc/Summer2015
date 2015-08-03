@@ -8,7 +8,7 @@ from google.protobuf import text_format
 from caffe.draw import get_pydot_graph
 from caffe.proto import caffe_pb2
 
-def endoder_layer(bottom, num_out):
+def encoder_layer(bottom, num_out):
     return L.InnerProduct(bottom,
                          # Global learningrate and decayrate multipliers for this layer
                          # For the parameters and bias respectively
@@ -41,20 +41,20 @@ def caffenet(train_lmdb, test_lmdb, batch_size=10):
     #                 transform_param=dict(scale=1./255), ntop=1)
 
     # Stack of Innerproduct->sigmoid layers
-    n.enc1 = endoder_layer(n.data, 1000)
+    n.enc1 = encoder_layer(n.data, 1000)
     n.encn1 = L.Sigmoid(n.enc1)
-    n.enc2 = endoder_layer(n.encn1, 500)
+    n.enc2 = encoder_layer(n.encn1, 500)
     n.encn2 = L.Sigmoid(n.enc2)
-    n.enc3 = endoder_layer(n.encn2, 250)
+    n.enc3 = encoder_layer(n.encn2, 250)
     n.encn3 = L.Sigmoid(n.enc3)
-    n.enc4 = endoder_layer(n.encn3, 30)
-    n.dec4 = endoder_layer(n.enc4, 250)
+    n.enc4 = encoder_layer(n.encn3, 30)
+    n.dec4 = encoder_layer(n.enc4, 250)
     n.decn4 = L.Sigmoid(n.dec4)
-    n.dec3 = endoder_layer(n.decn4, 500)
+    n.dec3 = encoder_layer(n.decn4, 500)
     n.decn3 = L.Sigmoid(n.dec3)
-    n.dec2 = endoder_layer(n.decn3, 1000)
+    n.dec2 = encoder_layer(n.decn3, 1000)
     n.decn2 = L.Sigmoid(n.dec2)
-    n.dec1 = endoder_layer(n.decn2, 784)
+    n.dec1 = encoder_layer(n.decn2, 784)
     n.decn1 = L.Sigmoid(n.dec1)
 
     # Flatten the data so it can be compared to the output of the stack

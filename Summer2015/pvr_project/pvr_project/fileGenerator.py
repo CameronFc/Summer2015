@@ -23,6 +23,7 @@ class FileGenerator:
         # Use this to vary the name of the images we want to create
         index_name = "CaffeImage"
         sc.clearPickleIndex(type, index_name)
+        sc.clearIndex(index_name)
         for i in range(numAnims):
             #need a delimiter to separate scene# from frame#
             delim = "D"
