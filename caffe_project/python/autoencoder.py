@@ -40,7 +40,7 @@ def caffenet(train_lmdb, test_lmdb, batch_size=10):
     #                 include=[dict(phase=1)],
     #                 transform_param=dict(scale=1./255), ntop=1)
 
-    # Series of Innerproduct->sigmoid layers
+    # Stack of Innerproduct->sigmoid layers
     n.enc1 = endoder_layer(n.data, 1000)
     n.encn1 = L.Sigmoid(n.enc1)
     n.enc2 = endoder_layer(n.encn1, 500)
@@ -57,18 +57,12 @@ def caffenet(train_lmdb, test_lmdb, batch_size=10):
     n.dec1 = endoder_layer(n.decn2, 784)
     n.decn1 = L.Sigmoid(n.dec1)
 
+    # Flatten the data so it can be compared to the output of the stack
     n.flatdata = L.Flatten(n.data)
 
+    # Loss layers
     n.cross_entropy_loss = L.SigmoidCrossEntropyLoss(n.dec1, n.flatdata)
     n.euclidean_loss = L.EuclideanLoss(n.decn1, n.flatdata)
-
-    # n.pool1 = L.Pooling(n.conv1, kernel_size=2, stride=2, pool=P.Pooling.MAX)
-    # n.conv2 = L.Convolution(n.pool1, kernel_size=5, num_output=50, weight_filler=dict(type='xavier'))
-    # n.pool2 = L.Pooling(n.conv2, kernel_size=2, stride=2, pool=P.Pooling.MAX)
-    # n.ip1 = L.InnerProduct(n.pool2, num_output=500, weight_filler=dict(type='xavier'))
-    # n.relu1 = L.ReLU(n.ip1, in_place=True)
-    # n.ip2 = L.InnerProduct(n.relu1, num_output=10, weight_filler=dict(type='xavier'))
-    # n.loss = L.SoftmaxWithLoss(n.ip2, n.label)
     return n.to_proto()
 
 def make_net():
