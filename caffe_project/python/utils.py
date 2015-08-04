@@ -1,8 +1,8 @@
 import os
 from subprocess import call
 
+# Code in separate project that generates this color class
 def get_color_from_cclass(cclass):
-    # Code in separate project that generates this color class
     # return int(4 * color[0] + 2 * color[1] + color[2])
     r = int(cclass / 4)
     g = int(cclass / 2 % 2)
@@ -13,7 +13,7 @@ def get_color_from_cclass(cclass):
 # Listing file must have format "<path/to/file> <class>" on each line for each file
 # note that the above is relative to the built caffe binary
 def convert_to_lmdb(listing_file):
-    call_array = ["../net_sources/convert_imageset", "../images/", listing_file, "../net_sources/" + listing_file + "_lmdb"]
+    call_array = ["../net_sources/convert_imageset", "../images/", "../net_sources/" + listing_file, "../net_sources/" + listing_file + "_lmdb"]
     call(call_array)
 
 # files = os.listdir("../images")

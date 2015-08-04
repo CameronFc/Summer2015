@@ -5,6 +5,9 @@ layer {
   top: "data"
   transform_param {
     scale: 0.00392156862745
+    mean_value: 120
+    mean_value: 120
+    mean_value: 120
   }
   data_param {
     source: "../net_sources/CaffeImage_lmdb"
@@ -244,7 +247,7 @@ layer {
     decay_mult: 0
   }
   inner_product_param {
-    num_output: 784
+    num_output: 14400
     weight_filler {
       type: "gaussian"
       std: 1

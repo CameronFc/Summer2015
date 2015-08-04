@@ -1,6 +1,7 @@
 from __future__ import print_function
 import caffe
 import os
+import numpy as np
 from caffe import layers as L, params as P
 from header import Dirs
 
@@ -28,7 +29,11 @@ def encoder_layer(bottom, num_out):
                          )
 
 # Define the structure of the autoencoder here
-def caffenet(train_lmdb, test_lmdb, batch_size=10):
+#Specify the input_dim as [channels, height, width]
+def caffenet(train_lmdb, test_lmdb, input_dim, batch_size=10):
+    # Size of flattened array of single image
+    feats = np.prod(input_dim)
+
     n = caffe.NetSpec()
     # Define data layers
     n.data = L.Data(batch_size=batch_size, backend=P.Data.LMDB, source=train_lmdb,
@@ -54,7 +59,7 @@ def caffenet(train_lmdb, test_lmdb, batch_size=10):
     n.decn3 = L.Sigmoid(n.dec3)
     n.dec2 = encoder_layer(n.decn3, 1000)
     n.decn2 = L.Sigmoid(n.dec2)
-    n.dec1 = encoder_layer(n.decn2, 784)
+    n.dec1 = encoder_layer(n.decn2, feats)
     n.decn1 = L.Sigmoid(n.dec1)
 
     # Flatten the data so it can be compared to the output of the stack
@@ -65,14 +70,16 @@ def caffenet(train_lmdb, test_lmdb, batch_size=10):
     n.euclidean_loss = L.EuclideanLoss(n.decn1, n.flatdata)
     return n.to_proto()
 
-def make_net(dataset):
+# Create the net.prototxt file
+def make_net(dataset, input_dim):
     with open(Dirs.core_path + 'custom_autoencoder.prototxt', 'w') as f:
         f.write("name: \"Custom_Autoencoder\"\n")
-        print(caffenet('../net_sources/' + dataset, "../net_sources/" + dataset), file=f)
+        print(caffenet('../net_sources/' + dataset, "../net_sources/" + dataset, input_dim), file=f)
 
-def make_graph():
+# Create graph of the net
+def make_graph(name):
     try:
-        os.remove("custom_graph.png")
+        os.remove(name + ".png")
     except:
         pass
     _net = caffe_pb2.NetParameter()
@@ -80,8 +87,9 @@ def make_graph():
     text_format.Merge(f.read(), _net)
     get_pydot_graph(_net,"TB").write_png("custom_graph.png")
 
-make_net("CaffeImage_lmdb")
-make_graph()
+make_net("CaffeImage_lmdb", input_dim=[3,60,80])
+#make_net("mnist_train_lmdb")
+make_graph("Custom_Graph")
 
 
 
