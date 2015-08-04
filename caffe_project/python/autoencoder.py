@@ -29,7 +29,7 @@ def encoder_layer(bottom, num_out):
                          )
 
 # Define the structure of the autoencoder here
-#Specify the input_dim as [channels, height, width]
+# Specify the input_dim as [channels, height, width]
 def caffenet(train_lmdb, test_lmdb, input_dim, batch_size=10):
     # Size of flattened array of single image
     feats = np.prod(input_dim)
@@ -39,7 +39,8 @@ def caffenet(train_lmdb, test_lmdb, input_dim, batch_size=10):
     n.data = L.Data(batch_size=batch_size, backend=P.Data.LMDB, source=train_lmdb,
                     # phase == 'TRAIN'
                     # include=[dict(phase=0)],
-                    transform_param=dict(scale=1./255), ntop=1)
+                    transform_param=dict(scale=1/255), ntop=1)
+    # Unused test layer
     # n.data_test = L.Data(name="data", batch_size=batch_size, backend=P.Data.LMDB, source=test_lmdb,
     #                 # phase == 'TEST'
     #                 include=[dict(phase=1)],
@@ -66,8 +67,13 @@ def caffenet(train_lmdb, test_lmdb, input_dim, batch_size=10):
     n.flatdata = L.Flatten(n.data)
 
     # Loss layers
-    n.cross_entropy_loss = L.SigmoidCrossEntropyLoss(n.dec1, n.flatdata)
+    # n.cross_entropy_loss = L.SigmoidCrossEntropyLoss(n.dec1, n.flatdata)
     n.euclidean_loss = L.EuclideanLoss(n.decn1, n.flatdata)
+
+    # Out layer
+    # n.out_layer = L.Split(n.data)
+
+
     return n.to_proto()
 
 # Create the net.prototxt file
@@ -76,20 +82,20 @@ def make_net(dataset, input_dim):
         f.write("name: \"Custom_Autoencoder\"\n")
         print(caffenet('../net_sources/' + dataset, "../net_sources/" + dataset, input_dim), file=f)
 
-# Create graph of the net
+# Create graph of the net; completely optional
 def make_graph(name):
     try:
         os.remove(name + ".png")
     except:
         pass
     _net = caffe_pb2.NetParameter()
-    f = open("../net_sources/custom_autoencoder.prototxt")
+    f = open("../net_sources/" + name + ".prototxt")
     text_format.Merge(f.read(), _net)
     get_pydot_graph(_net,"TB").write_png("custom_graph.png")
 
-make_net("CaffeImage_lmdb", input_dim=[3,60,80])
+# make_net("CaffeImage_lmdb", input_dim=[3,60,80])
 #make_net("mnist_train_lmdb")
-make_graph("Custom_Graph")
+make_graph("deploy")
 
 
 

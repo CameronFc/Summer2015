@@ -4,10 +4,7 @@ layer {
   type: "Data"
   top: "data"
   transform_param {
-    scale: 0.00392156862745
-    mean_value: 120
-    mean_value: 120
-    mean_value: 120
+    scale: 0
   }
   data_param {
     source: "../net_sources/CaffeImage_lmdb"
@@ -270,13 +267,6 @@ layer {
   type: "Flatten"
   bottom: "data"
   top: "flatdata"
-}
-layer {
-  name: "cross_entropy_loss"
-  type: "SigmoidCrossEntropyLoss"
-  bottom: "dec1"
-  bottom: "flatdata"
-  top: "cross_entropy_loss"
 }
 layer {
   name: "euclidean_loss"
