@@ -73,7 +73,6 @@ def caffenet(train_lmdb, test_lmdb, input_dim, batch_size=10):
     # Out layer
     # n.out_layer = L.Split(n.data)
 
-
     return n.to_proto()
 
 # Create the net.prototxt file

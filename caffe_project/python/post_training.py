@@ -28,15 +28,13 @@ print net.blobs['data'].data.shape
 # plt.imshow(transformer.deprocess('data', net.blobs['data'].data[0]))
 
 #.transpose(0,2,3,1).reshape(10*60,80,3)
-img = "../images/CaffeImage0D.jpg"
+img = "../images/pvr_images/CaffeImage0D.jpg"
 src = net.blobs['data']
 src.data[0] = misc.imread(img).transpose(2,0,1)
 print misc.imread(img).transpose(2,0,1).shape
 # out = net.forward()
 print net.blobs['data'].data[0].sum()
 image = misc.imread(img)
-
-
 
 print(type(net.blobs['data'].data[0][0,0,0]))
 print(type(image[0,0,0].astype('uint8')))
