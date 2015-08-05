@@ -28,17 +28,23 @@ print net.blobs['data'].data.shape
 # plt.imshow(transformer.deprocess('data', net.blobs['data'].data[0]))
 
 #.transpose(0,2,3,1).reshape(10*60,80,3)
-img = "../images/CaffeImage15D.jpg"
-net.blobs['data'].data[0] = misc.imread(img).transpose(2,0,1)
+img = "../images/CaffeImage0D.jpg"
+src = net.blobs['data']
+src.data[0] = misc.imread(img).transpose(2,0,1)
 print misc.imread(img).transpose(2,0,1).shape
 # out = net.forward()
 print net.blobs['data'].data[0].sum()
 image = misc.imread(img)
 
 
+
+print(type(net.blobs['data'].data[0][0,0,0]))
+print(type(image[0,0,0].astype('uint8')))
+
 #print out
+# Images are exactly the same, must be matplotlib that is in error
 #plt.imshow(net.blobs['data'].data[0].transpose(1,2,0), cmap=plt.cm.gray)
-plt.imshow(net.blobs['data'].data[0].transpose(1,2,0), cmap=plt.cm.gray)
+plt.imshow(net.blobs['data'].data[0].astype('uint8').transpose(1,2,0), cmap=plt.cm.gray)
 plt.show()
 # plt.imshow(misc.imread(img), cmap=plt.cm.gray)
 # plt.show()
