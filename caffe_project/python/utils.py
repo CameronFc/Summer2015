@@ -16,13 +16,16 @@ def convert_to_lmdb(listing_file):
     call_array = ["../net_sources/convert_imageset", "../images/", "../net_sources/" + listing_file, "../net_sources/" + listing_file + "_lmdb"]
     call(call_array)
 
-# files = os.listdir("../images")
-# with open("../net_sources/images.txt", 'w') as out:
-#     path = "../images/"
-#     for file in files:
-#         string = "{0} {1}".format(file, 0)
-#         print string
-#         out.write(string + '\n')
+def create_listfile(image_dir):
+    files = os.listdir("../images/" + image_dir)
+    with open("../net_sources/images.txt", 'w') as out:
+        for file in files:
+            string = "{0}{1} {2}".format("../images/" + image_dir + "/" ,file, 0)
+            print string
+            out.write(string + '\n')
 
 # print (get_color_from_cclass(0))
-convert_to_lmdb("CaffeImage")
+
+
+create_listfile("pvr_images")
+#convert_to_lmdb("CaffeImage_w_labels")

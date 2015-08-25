@@ -113,8 +113,6 @@ def index_image_names(path, net):
                 findex = "({})".format(index)
                 os.rename(path + file, path + findex + file)
 
-
-
 # Specify index to restart from if there is a crash
 def generate_all_dreams(image, start_index=10):
     it = iter(get_dream_layers(net)[start_index:])

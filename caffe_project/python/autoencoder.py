@@ -9,12 +9,12 @@ from google.protobuf import text_format
 from caffe.draw import get_pydot_graph
 from caffe.proto import caffe_pb2
 
-def encoder_layer(bottom, num_out):
+def encoder_layer(bottom, num_out, lr_n_mult=1, lr_b_mult=1):
     return L.InnerProduct(bottom,
                          # Global learningrate and decayrate multipliers for this layer
                          # For the parameters and bias respectively
-                         param=[dict(lr_mult=1,decay_mult=1),
-                                dict(lr_mult=1,decay_mult=0)],
+                         param=[dict(lr_mult=lr_n_mult,decay_mult=1),
+                                dict(lr_mult=lr_b_mult,decay_mult=0)],
                          inner_product_param=dict(
                              num_output =num_out,
                              weight_filler=dict(
@@ -30,21 +30,23 @@ def encoder_layer(bottom, num_out):
 
 # Define the structure of the autoencoder here
 # Specify the input_dim as [channels, height, width]
-def caffenet(train_lmdb, test_lmdb, input_dim, batch_size=10):
+def caffenet(train_file, test_lmdb, input_dim, batch_size=20):
     # Size of flattened array of single image
     feats = np.prod(input_dim)
 
     n = caffe.NetSpec()
     # Define data layers
-    n.data = L.Data(batch_size=batch_size, backend=P.Data.LMDB, source=train_lmdb,
+    n.data, n.labels = L.ImageData(batch_size=batch_size, source=train_file,
                     # phase == 'TRAIN'
                     # include=[dict(phase=0)],
-                    transform_param=dict(scale=1/255), ntop=1)
+                    transform_param=dict(scale=1), ntop=2)
     # Unused test layer
     # n.data_test = L.Data(name="data", batch_size=batch_size, backend=P.Data.LMDB, source=test_lmdb,
     #                 # phase == 'TEST'
     #                 include=[dict(phase=1)],
     #                 transform_param=dict(scale=1./255), ntop=1)
+
+    n.flatdata = L.Flatten(n.data)
 
     # Stack of Innerproduct->sigmoid layers
     n.enc1 = encoder_layer(n.data, 1000)
@@ -63,12 +65,16 @@ def caffenet(train_lmdb, test_lmdb, input_dim, batch_size=10):
     n.dec1 = encoder_layer(n.decn2, feats)
     n.decn1 = L.Sigmoid(n.dec1)
 
+
+    n.sig_flat_data = L.Sigmoid(n.flatdata)
+
     # Flatten the data so it can be compared to the output of the stack
-    n.flatdata = L.Flatten(n.data)
+
 
     # Loss layers
-    # n.cross_entropy_loss = L.SigmoidCrossEntropyLoss(n.dec1, n.flatdata)
-    n.euclidean_loss = L.EuclideanLoss(n.decn1, n.flatdata)
+    n.cross_entropy_loss = L.SigmoidCrossEntropyLoss(n.decn1, n.sig_flat_data)
+    n.euclidean_loss = L.EuclideanLoss(n.flatdata, n.decn1)
+    # n.f_out = L.Split(n.flatdata)
 
     # Out layer
     # n.out_layer = L.Split(n.data)
@@ -79,7 +85,13 @@ def caffenet(train_lmdb, test_lmdb, input_dim, batch_size=10):
 def make_net(dataset, input_dim):
     with open(Dirs.core_path + 'custom_autoencoder.prototxt', 'w') as f:
         f.write("name: \"Custom_Autoencoder\"\n")
+        f.write("input: \"data\" \n\
+input_dim: 20 \n\
+input_dim: 3 \n\
+input_dim: 60 \n\
+input_dim: 80 \n")
         print(caffenet('../net_sources/' + dataset, "../net_sources/" + dataset, input_dim), file=f)
+        f.write()
 
 # Create graph of the net; completely optional
 def make_graph(name):
@@ -92,9 +104,15 @@ def make_graph(name):
     text_format.Merge(f.read(), _net)
     get_pydot_graph(_net,"TB").write_png("custom_graph.png")
 
-# make_net("CaffeImage_lmdb", input_dim=[3,60,80])
+# Create function that generates and trains the set
+def create_and_train():
+    # Create the same net with a different layer specified to train
+    pass
+
+
+make_net("images.txt", input_dim=[3,60,80])
 #make_net("mnist_train_lmdb")
-make_graph("deploy")
+make_graph("custom_autoencoder")
 
 
 

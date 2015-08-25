@@ -1,9 +1,4 @@
 name: "Custom_Autoencoder"
-input: "data" 
-input_dim: 20 
-input_dim: 3 
-input_dim: 60 
-input_dim: 80 
 layer {
   name: "data"
   type: "ImageData"
