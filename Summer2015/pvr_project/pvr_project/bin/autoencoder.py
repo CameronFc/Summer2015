@@ -49,14 +49,17 @@ class AutoEncoder():
         l4n = l2n
         num_classes = 8
         # 4 layers from 4x -> 2x-> x-> 2x-> 4x
-        self.Meta.add_conv_layer(input=self.Meta.get_x(), filter_shape=(1,3,5,5), image_shape=(1,3,60,80), poolsize=(2,2))
-        self.Meta.add_layer(input=self.Meta.get_layer(0).output.flatten(), dims=[3,28*38])
+        # self.Meta.add_conv_layer(input=self.Meta.get_x(), filter_shape=(1,3,5,5), image_shape=(1,3,60,80), poolsize=(2,2))
+        self.Meta.add_layer(input=self.Meta.get_x(), dims=[3,80,60])
+        # self.Meta.add_layer(input=self.Meta.get_layer(0).output, dims=[3,60*80])
+        # self.Meta.add_layer(input=self.Meta.get_layer(1).output, dims=[3,60*80])
         # Add custom cost function
-        cost = (self.Meta.get_layer(1).output - self.Meta.get_x()**2).sum()
+        cost = (self.Meta.get_layer(0).output * 0).sum()
+        # cost = (self.Meta.get_layer(2).output - self.Meta.get_x()**2).sum()
         # Regularization added automatically
         self.Meta.add_cost(cost)
         # Specify the indices of what layers we want to come out of the classify function
-        self.Meta.test_output_layers = [3]
+        self.Meta.test_output_layers = [0]
 
     def train(self):
         self.Meta.train()
@@ -71,4 +74,5 @@ class AutoEncoder():
         self.Meta.load_last()
 
 aut = AutoEncoder()
-aut.train()
+# aut.train()
+aut.test()

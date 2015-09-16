@@ -18,8 +18,10 @@ rng = np.random
 
 class HiddenLayer:
     def __init__(self, input, dims, num_layers, activation=None):
-        wBase = rng.randn(*dims)
-        self.w = theano.shared(wBase, name='w' + str(num_layers))
+        # TODO: CHANGE ME BACK
+        # wBase = np.ones(*dims)
+        # wBase = rng.randn(*dims)
+        self.w = theano.shared(1., name='w' + str(num_layers))
         self.b = theano.shared(0. , name='b' + str(num_layers))
         linOutput = T.dot(self.w, input) + self.b
         self.output = (
